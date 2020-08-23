@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "dZcYh/75IYxvA4DTk2CJfRh6OozZyPtBMC2M6uNRRss1WfP97DWKDyddzD9mO74LY2iLGEdeLMYn0br7n5VFMw==",
+  "success": true,
+  "projectFilePath": "/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/Pandemic.csproj",
+  "expectedPackageFiles": [
+    "/Users/john/.nuget/packages/microsoft.netcore.app.ref/3.0.0/microsoft.netcore.app.ref.3.0.0.nupkg.sha512",
+    "/Users/john/.nuget/packages/microsoft.aspnetcore.app.ref/3.0.1/microsoft.aspnetcore.app.ref.3.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

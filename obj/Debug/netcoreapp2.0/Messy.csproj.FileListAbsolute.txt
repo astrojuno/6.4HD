@@ -1,0 +1,12 @@
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/bin/Debug/netcoreapp2.0/Messy.deps.json
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/bin/Debug/netcoreapp2.0/Messy.runtimeconfig.json
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/bin/Debug/netcoreapp2.0/Messy.runtimeconfig.dev.json
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/bin/Debug/netcoreapp2.0/Messy.dll
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/bin/Debug/netcoreapp2.0/Messy.pdb
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/obj/Debug/netcoreapp2.0/Messy.csprojAssemblyReference.cache
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/obj/Debug/netcoreapp2.0/Messy.AssemblyInfoInputs.cache
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/obj/Debug/netcoreapp2.0/Messy.AssemblyInfo.cs
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/obj/Debug/netcoreapp2.0/Messy.csproj.CoreCompileInputs.cache
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/obj/Debug/netcoreapp2.0/Messy.dll
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/obj/Debug/netcoreapp2.0/Messy.pdb
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 4/4.3C/Messy/obj/Debug/netcoreapp2.0/Messy.genruntimeconfig.cache

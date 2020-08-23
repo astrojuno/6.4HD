@@ -1,0 +1,12 @@
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/bin/Debug/netcoreapp3.0/Pandemic.deps.json
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/bin/Debug/netcoreapp3.0/Pandemic.runtimeconfig.json
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/bin/Debug/netcoreapp3.0/Pandemic.runtimeconfig.dev.json
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/bin/Debug/netcoreapp3.0/Pandemic.dll
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/bin/Debug/netcoreapp3.0/Pandemic.pdb
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/obj/Debug/netcoreapp3.0/Pandemic.csprojAssemblyReference.cache
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/obj/Debug/netcoreapp3.0/Pandemic.AssemblyInfoInputs.cache
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/obj/Debug/netcoreapp3.0/Pandemic.AssemblyInfo.cs
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/obj/Debug/netcoreapp3.0/Pandemic.csproj.CoreCompileInputs.cache
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/obj/Debug/netcoreapp3.0/Pandemic.dll
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/obj/Debug/netcoreapp3.0/Pandemic.pdb
+/Users/john/Documents/Deakin Uni 219466419/2020 - 2/SIT232 Object Oriented Programming/Week 6/6.4HD/obj/Debug/netcoreapp3.0/Pandemic.genruntimeconfig.cache
