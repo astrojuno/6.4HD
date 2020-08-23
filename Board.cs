@@ -21,34 +21,7 @@ namespace Pandemic {
         public Board() {
             createPlayerCards();
             createInfectionCards();
-            //loadCities();
-
-            // Console.WriteLine("starting test...");
-            // City testCity = null;
-            // foreach(City city in cities) {
-            //     //Console.WriteLine("in first foreach");
-            //     if(city.name == "Toronto") {
-            //         Console.WriteLine("found city");
-            //         testCity = city;
-            //     }
-            // }
-            // foreach(City city in testCity.connectedCities) {
-            //     city.increaseInfection();
-            //     Console.WriteLine(city.name + " infection increased to " + city.infectionLevel);
-            // }
-            // foreach(City city in cities) {
-            //     if(city.name == "Montreal") {
-            //         Console.WriteLine("found NY");
-            //         testCity = city;
-            //     }
-            // }
-            // Console.WriteLine("test city connections: " + testCity.connectedCities.Count);
-            // foreach(City city in testCity.connectedCities) {
-            //     Console.WriteLine(testCity.name + " connected to: " + city.name + " infection: " + city.infectionLevel);
-            // }
-
-            // Console.WriteLine("test over");
-
+            loadCities();
         }
 
         // Private Methods
@@ -132,46 +105,151 @@ namespace Pandemic {
                         }
                         break;
                     case "Chicago":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Toronto" || cityToAssess.name == "Washington" || cityToAssess.name == "Indianapolis" || cityToAssess.name == "Minneapolis")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Boston":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Montreal" || cityToAssess.name == "New York")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "New York":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Boston" || cityToAssess.name == "Montreal" || cityToAssess.name == "Toronto" || cityToAssess.name == "Washington")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Washington":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "New York" || cityToAssess.name == "Chicago" || cityToAssess.name == "Atlanta")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Indianapolis":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Chicago" || cityToAssess.name == "Atlanta" || cityToAssess.name == "Dallas")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Los Angeles":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "San Francisco" || cityToAssess.name == "Phoenix" || cityToAssess.name == "Guadalajara")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Phoenix":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Denver" || cityToAssess.name == "Dallas" || cityToAssess.name == "Monterrey" || cityToAssess.name == "Los Angeles")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break; 
                     case "Minneapolis":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Calgary" || cityToAssess.name == "Denver" || cityToAssess.name == "Chicago")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "San Francisco":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Seattle" || cityToAssess.name == "Denver" || cityToAssess.name == "Los Angeles")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Seattle":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Calgary" || cityToAssess.name == "San Francisco")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Calgary":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Seattle" || cityToAssess.name == "Denver" || cityToAssess.name == "Minneapolis")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Denver":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Calgary" || cityToAssess.name == "Minneapolis" || cityToAssess.name == "Phoenix" || cityToAssess.name == "San Francisco")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Dallas":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Phoenix" || cityToAssess.name == "Indianapolis" || cityToAssess.name == "Atlanta" || cityToAssess.name == "New Orleans")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Monterrey":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Phoenix" || cityToAssess.name == "New Orleans" || cityToAssess.name == "Ciudad De Mexico" || cityToAssess.name == "Guadalajara")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Guadalajara":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Ciudad De Mexico" || cityToAssess.name == "Monterrey" || cityToAssess.name == "Los Angeles")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Ciudad De Mexico":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Guadalajara" || cityToAssess.name == "Monterrey" || cityToAssess.name == "Tegucigalpa")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "New Orleans":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Dallas" || cityToAssess.name == "Monterrey" || cityToAssess.name == "Miami")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Tegucigalpa":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Havana" || cityToAssess.name == "Ciudad De Mexico")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Havana":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Miami" || cityToAssess.name == "Ciudad De Mexico" || cityToAssess.name == "Tegucigalpa" || cityToAssess.name == "Santo Domingo")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Miami":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Atlanta" || cityToAssess.name == "New Orleans" || cityToAssess.name == "Havana")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                     case "Santo Domingo":
+                        foreach(City cityToAssess in cities) {
+                            if((cityToAssess.name == "Havana")) {
+                                city.addConnectedCity(cityToAssess);
+                            }
+                        }
                         break;
                 }
             }

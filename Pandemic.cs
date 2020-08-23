@@ -43,19 +43,19 @@ namespace Pandemic {
             double xOffset = (windowWidth - SplashKit.BitmapNamed("boardImage").Width) / 2;
             double yOffset = (windowHeight - SplashKit.BitmapNamed("boardImage").Height) / 2;
             
-            //gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(scalar, scalar));
+            gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(scalar, scalar));
             
             InfectionCard infectionCardToFlip = board.nextInfectionCard;
             InfectionCard flippedInfectionCard = null;
             PlayerCard playerCardToFlip = board.nextPlayerCard;
             PlayerCard flippedPlayerCard = null;
             
-            if(playerCardToFlip.cardImage != null) {
-                Console.WriteLine(playerCardToFlip.cardImage);
-                Console.WriteLine(playerCardToFlip.cardImage.BoundingRectangle().Height + " " + playerCardToFlip.cardImage.BoundingRectangle().Width);
-            } else {
-                Console.WriteLine("null");
-            }
+            // if(playerCardToFlip.cardImage != null) {
+            //     Console.WriteLine(playerCardToFlip.cardImage);
+            //     Console.WriteLine(playerCardToFlip.cardImage.BoundingRectangle().Height + " " + playerCardToFlip.cardImage.BoundingRectangle().Width);
+            // } else {
+            //     Console.WriteLine("null");
+            // }
 
             while(!gameWindow.CloseRequested) {
                 SplashKit.ProcessEvents();
@@ -86,13 +86,13 @@ namespace Pandemic {
                         flippedPlayerCard = playerCardToFlip;
                         flippedPlayerCard.isFaceUp = true;
                         playerCardToFlip = board.nextPlayerCard;
-                        Console.WriteLine("player card");
+                        //Console.WriteLine("player card");
                     }
                     else if(SplashKit.PointInRectangle(mouseLoc, infCardRect)) {
                         flippedInfectionCard = infectionCardToFlip;
                         flippedInfectionCard.isFaceUp = true;
                         infectionCardToFlip = board.nextInfectionCard;
-                        Console.WriteLine("infection card");
+                        //Console.WriteLine("infection card");
                     }
                 }
                 gameWindow.Refresh(60);
