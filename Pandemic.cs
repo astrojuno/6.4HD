@@ -31,12 +31,15 @@ namespace Pandemic {
             loadResources();
             
             // to create a good sized window. tested on 15" laptop. 
+            // if you change this then you'll need to change ALL the city locations on the board also!
             double scalar = 0.25F;
             int windowHeight = (int)(SplashKit.BitmapNamed("boardImage").Height * scalar);
             int windowWidth = (int)(SplashKit.BitmapNamed("boardImage").Width * scalar);
             gameWindow = new Window("Pandemic", windowWidth, windowHeight);
             
             board = new Board();
+
+            MedicPlayer medic = new MedicPlayer();
 
             // for some unknown reason, splashkit draws a scaled bitmap anchored from the centre. so the 0, 0 point
             // needs to be offset when scaling. frustrating.
@@ -45,65 +48,69 @@ namespace Pandemic {
             
             gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(scalar, scalar));
             
+            // Infection card pile
             InfectionCard infectionCardToFlip = board.nextInfectionCard;
             InfectionCard flippedInfectionCard = null;
+            // Player card pile
             PlayerCard playerCardToFlip = board.nextPlayerCard;
             PlayerCard flippedPlayerCard = null;
-            
-            // if(playerCardToFlip.cardImage != null) {
-            //     Console.WriteLine(playerCardToFlip.cardImage);
-            //     Console.WriteLine(playerCardToFlip.cardImage.BoundingRectangle().Height + " " + playerCardToFlip.cardImage.BoundingRectangle().Width);
-            // } else {
-            //     Console.WriteLine("null");
-            // }
 
+            // Rects to keep track of important spaces on the board
+            Rectangle infCardRect;
+            Rectangle playerCardRect;
+            
             while(!gameWindow.CloseRequested) {
                 SplashKit.ProcessEvents();
-                
-                //perhaps move draw card to the card object, then it can keep track of it's location?
-                //not sure this is a good idea, just a thought...
-                //_card.xLoc = 100;
-                //_card.yLoc = 100;
-                
-                gameWindow.DrawBitmap(playerCardToFlip.cardImage, PLAYER_CARD_X, PLAYER_CARD_Y);
-                if(flippedPlayerCard != null) {
-                    gameWindow.DrawBitmap(flippedPlayerCard.cardImage, FLIPPED_PLAYER_CARD_X, FLIPPED_PLAYER_CARD_Y);
-                }
-                
-                gameWindow.DrawBitmap(infectionCardToFlip.cardImage, INFECTION_X, INFECTION_Y);
-                if(flippedInfectionCard != null) {
-                    gameWindow.DrawBitmap(flippedInfectionCard.cardImage, FLIPPED_INFECTION_X, FLIPPED_INFECTION_Y);
-                }
 
-                Rectangle cardRect = SplashKit.RectangleFrom(PLAYER_CARD_X, PLAYER_CARD_Y, playerCardToFlip.cardImage.Width, playerCardToFlip.cardImage.Height);
-                Rectangle infCardRect = SplashKit.RectangleFrom(INFECTION_X, INFECTION_Y, infectionCardToFlip.cardImage.Width, infectionCardToFlip.cardImage.Height);
-                //gameWindow.DrawRectangle(Color.Red, cardRect);
-                //gameWindow.DrawRectangle(Color.Blue, infCardRect);
+                infCardRect = drawInfectionCards(infectionCardToFlip, flippedInfectionCard);
+                playerCardRect = drawPlayerCards(playerCardToFlip, flippedPlayerCard);
+
+
                 
                 if(SplashKit.MouseClicked(MouseButton.LeftButton)){
                     Point2D mouseLoc = SplashKit.MousePosition();
-                    if(SplashKit.PointInRectangle(mouseLoc, cardRect)) {
+                    
+                    if(SplashKit.PointInRectangle(mouseLoc, playerCardRect)) {
                         flippedPlayerCard = playerCardToFlip;
                         flippedPlayerCard.isFaceUp = true;
                         playerCardToFlip = board.nextPlayerCard;
-                        //Console.WriteLine("player card");
                     }
                     else if(SplashKit.PointInRectangle(mouseLoc, infCardRect)) {
                         flippedInfectionCard = infectionCardToFlip;
                         flippedInfectionCard.isFaceUp = true;
                         infectionCardToFlip = board.nextInfectionCard;
-                        //Console.WriteLine("infection card");
                     }
                 }
                 gameWindow.Refresh(60);
             }
         }
 
+        // Loads the splashkit resources
         private void loadResources() {
             SplashKit.LoadFont("roboto", "Roboto-Bold.ttf");
             SplashKit.LoadBitmap("PlayerBack", "PlayerCardback.png");
             SplashKit.LoadBitmap("InfectionBack", "InfectionCardBack.png");
             SplashKit.LoadBitmap("boardImage", "Board.png");
+        }
+
+        // draws the infection card pile and returns the rect where the pile is
+        private Rectangle drawInfectionCards(InfectionCard infectionCardToFlip, InfectionCard flippedInfectionCard) {
+            gameWindow.DrawBitmap(infectionCardToFlip.cardImage, INFECTION_X, INFECTION_Y);
+            if(flippedInfectionCard != null) {
+                gameWindow.DrawBitmap(flippedInfectionCard.cardImage, FLIPPED_INFECTION_X, FLIPPED_INFECTION_Y);
+            }
+
+            return SplashKit.RectangleFrom(INFECTION_X, INFECTION_Y, infectionCardToFlip.cardImage.Width, infectionCardToFlip.cardImage.Height);
+        }
+
+        // draws the player card pile and returns the rect where the pile is
+        private Rectangle drawPlayerCards(PlayerCard playerCardToFlip, PlayerCard flippedPlayerCard) {
+            gameWindow.DrawBitmap(playerCardToFlip.cardImage, PLAYER_CARD_X, PLAYER_CARD_Y);
+                if(flippedPlayerCard != null) {
+                    gameWindow.DrawBitmap(flippedPlayerCard.cardImage, FLIPPED_PLAYER_CARD_X, FLIPPED_PLAYER_CARD_Y);
+                }
+            
+            return SplashKit.RectangleFrom(PLAYER_CARD_X, PLAYER_CARD_Y, playerCardToFlip.cardImage.Width, playerCardToFlip.cardImage.Height);
         }
     }
 }

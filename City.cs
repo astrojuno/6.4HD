@@ -2,6 +2,7 @@
 // John Ryder 219466419
 
 using System.Collections.Generic;
+using SplashKitSDK;
 
 namespace Pandemic {
     // The groupings of the cities
@@ -15,9 +16,13 @@ namespace Pandemic {
         private bool _canBeOutbroken;
         private CityGroup _group;
         private List<City> _connectedCities;
+        private bool _hasBase;
+        private Point2D _cityLoc;
         public int infectionLevel { get { return _infectionLevel; } }
         public string name { get { return _name;} }
+        public bool hasBase { get { return _hasBase; } }
         public List<City> connectedCities { get { return _connectedCities; } }
+        public Point2D boardLocation { get { return _cityLoc;} }
 
         // Constructor
         public City(string name, CityGroup group) {
@@ -26,6 +31,7 @@ namespace Pandemic {
             _canBeOutbroken = true;
             _infectionLevel = 0;
             _connectedCities = new List<City>();
+            _hasBase = false;
         }
 
         // Public Methods
@@ -49,6 +55,14 @@ namespace Pandemic {
 
         public void addConnectedCity(City cityToAdd) {
             _connectedCities.Add(cityToAdd);
+        }
+
+        public void buildBase() {
+            _hasBase = true;
+        }
+
+        public void setBoardLocation(Point2D boardLocation) {
+            _cityLoc = boardLocation;
         }
 
         // Private Methods

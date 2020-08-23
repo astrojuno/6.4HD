@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SplashKitSDK;
 
 namespace Pandemic {
     public class Board {
@@ -48,9 +49,6 @@ namespace Pandemic {
         // create the infection card stack
         private void createInfectionCards() {
             foreach(string city in _blueCities) {
-                // InfectionCard card = new InfectionCard(city, CityGroup.blue);
-                // _infectionCards.Push(card);
-                // SplashKit.DrawBitmap(card.cardImage, 10, 10);
                 _infectionCards.Push(new InfectionCard(city, CityGroup.blue));
             }
             foreach(string city in _redCities) {
@@ -81,6 +79,7 @@ namespace Pandemic {
             }
 
             // only way I could figure this out was to brute force it...
+            Point2D cityLocationOnBoard = new Point2D();
             foreach(City city in cities) {
                 switch(city.name) {
                     case "Atlanta":
@@ -89,6 +88,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 820;
+                        cityLocationOnBoard.Y = 428;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Toronto":
                         foreach(City cityToAssess in cities) {
@@ -96,6 +98,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 890;
+                        cityLocationOnBoard.Y = 124;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Montreal":
                         foreach(City cityToAssess in cities) {
@@ -103,6 +108,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 1042;
+                        cityLocationOnBoard.Y = 76;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Chicago":
                         foreach(City cityToAssess in cities) {
@@ -110,6 +118,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 810;
+                        cityLocationOnBoard.Y = 230;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Boston":
                         foreach(City cityToAssess in cities) {
@@ -117,6 +128,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 1144;
+                        cityLocationOnBoard.Y = 162;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "New York":
                         foreach(City cityToAssess in cities) {
@@ -124,6 +138,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 1047;
+                        cityLocationOnBoard.Y = 243;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Washington":
                         foreach(City cityToAssess in cities) {
@@ -131,6 +148,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 1020;
+                        cityLocationOnBoard.Y = 368;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Indianapolis":
                         foreach(City cityToAssess in cities) {
@@ -138,6 +158,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 714;
+                        cityLocationOnBoard.Y = 340;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Los Angeles":
                         foreach(City cityToAssess in cities) {
@@ -145,6 +168,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 186;
+                        cityLocationOnBoard.Y = 479;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Phoenix":
                         foreach(City cityToAssess in cities) {
@@ -152,6 +178,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 378;
+                        cityLocationOnBoard.Y = 446;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break; 
                     case "Minneapolis":
                         foreach(City cityToAssess in cities) {
@@ -159,6 +188,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 640;
+                        cityLocationOnBoard.Y = 203;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "San Francisco":
                         foreach(City cityToAssess in cities) {
@@ -166,6 +198,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 279;
+                        cityLocationOnBoard.Y = 336;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Seattle":
                         foreach(City cityToAssess in cities) {
@@ -173,6 +208,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 285;
+                        cityLocationOnBoard.Y = 188;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Calgary":
                         foreach(City cityToAssess in cities) {
@@ -180,6 +218,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 431;
+                        cityLocationOnBoard.Y = 139;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Denver":
                         foreach(City cityToAssess in cities) {
@@ -187,6 +228,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 496;
+                        cityLocationOnBoard.Y = 320;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Dallas":
                         foreach(City cityToAssess in cities) {
@@ -194,6 +238,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 556;
+                        cityLocationOnBoard.Y = 435;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Monterrey":
                         foreach(City cityToAssess in cities) {
@@ -201,6 +248,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 487;
+                        cityLocationOnBoard.Y = 588;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Guadalajara":
                         foreach(City cityToAssess in cities) {
@@ -208,6 +258,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 454;
+                        cityLocationOnBoard.Y = 762;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Ciudad De Mexico":
                         foreach(City cityToAssess in cities) {
@@ -215,6 +268,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 611;
+                        cityLocationOnBoard.Y = 760;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "New Orleans":
                         foreach(City cityToAssess in cities) {
@@ -222,6 +278,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 707;
+                        cityLocationOnBoard.Y = 584;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Tegucigalpa":
                         foreach(City cityToAssess in cities) {
@@ -229,6 +288,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 810;
+                        cityLocationOnBoard.Y = 805;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Havana":
                         foreach(City cityToAssess in cities) {
@@ -236,6 +298,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 894;
+                        cityLocationOnBoard.Y = 689;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Miami":
                         foreach(City cityToAssess in cities) {
@@ -243,6 +308,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 1008;
+                        cityLocationOnBoard.Y = 580;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                     case "Santo Domingo":
                         foreach(City cityToAssess in cities) {
@@ -250,6 +318,9 @@ namespace Pandemic {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
+                        cityLocationOnBoard.X = 1167;
+                        cityLocationOnBoard.Y = 667;
+                        city.setBoardLocation(cityLocationOnBoard);
                         break;
                 }
             }
