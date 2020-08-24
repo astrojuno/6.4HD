@@ -14,9 +14,11 @@ namespace Pandemic {
         private string[] _blueCities = new string[] {"Atlanta", "Toronto", "Montreal", "Chicago", "Boston", "New York", "Washington", "Indianapolis"};
         private string[] _redCities = new string[] {"Los Angeles", "Phoenix", "Minneapolis", "San Francisco", "Seattle", "Calgary", "Denver", "Dallas"};
         private string[] _yellowCities = new string[] {"Monterrey", "Guadalajara", "Ciudad De Mexico", "New Orleans", "Tegucigalpa", "Havana", "Miami", "Santo Domingo"};
+        private List<Player> _players;
         private List<City> _cities = new List<City>();
         public PlayerCard nextPlayerCard { get { return _playerCards.Pop(); } }
         public InfectionCard nextInfectionCard { get { return _infectionCards.Pop(); } }
+        public List<Player> players { get { return _players; } }
 
 
         // Constructor
@@ -24,6 +26,7 @@ namespace Pandemic {
             createPlayerCards();
             createInfectionCards();
             loadCities();
+            _players = new List<Player>();
         }
 
         // Public Methods
@@ -33,6 +36,32 @@ namespace Pandemic {
             foreach(City city in _cities) {
                 if(SplashKit.PointInRectangle(point, city.boardLocation)) {
                     return city;
+                }
+            }
+            return null;
+        }
+
+        // gets and returns a city based on a name
+        // returns null if no city found
+        public City getCity(string cityName) {
+            foreach(City city in _cities) {
+                if(city.name.ToLower() == cityName.ToLower()) {
+                    return city;
+                }
+            }
+            return null;
+        }
+
+        // add a player to the game
+        public void addPlayer(Player player) {
+            _players.Add(player);
+        }
+
+        // get a player from the list of players
+        public Player GetPlayer(playerType type) {
+            foreach(Player player in _players) {
+                if(player.type == type) {
+                    return player;
                 }
             }
             return null;

@@ -2,12 +2,13 @@
 // John Ryder 219466419
 
 using System;
+using SplashKitSDK;
 
 namespace Pandemic {
     public class MedicPlayer : Player {
         // Constructor
         public MedicPlayer() : base(playerType.Medic) {
-
+            base._pawn = SplashKit.BitmapNamed("medic");
         }
 
         // Public Methods
