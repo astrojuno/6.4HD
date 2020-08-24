@@ -47,6 +47,7 @@ namespace Pandemic {
             double yOffset = (windowHeight - SplashKit.BitmapNamed("boardImage").Height) / 2;
             
             gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(scalar, scalar));
+            //board.drawRects();
             
             // Infection card pile
             InfectionCard infectionCardToFlip = board.nextInfectionCard;
@@ -58,6 +59,9 @@ namespace Pandemic {
             // Rects to keep track of important spaces on the board
             Rectangle infCardRect;
             Rectangle playerCardRect;
+
+            //double oldx = 0;
+            //double oldy = 0;
             
             while(!gameWindow.CloseRequested) {
                 SplashKit.ProcessEvents();
@@ -65,10 +69,18 @@ namespace Pandemic {
                 infCardRect = drawInfectionCards(infectionCardToFlip, flippedInfectionCard);
                 playerCardRect = drawPlayerCards(playerCardToFlip, flippedPlayerCard);
 
-
                 
                 if(SplashKit.MouseClicked(MouseButton.LeftButton)){
                     Point2D mouseLoc = SplashKit.MousePosition();
+                    // Console.WriteLine("X: {0}\tY: {1}", mouseLoc.X, mouseLoc.Y);
+                    // if(oldx == 0) {
+                    //     oldx = mouseLoc.X;
+                    //     oldy = mouseLoc.Y;
+                    // } else {
+                    //     Console.WriteLine("diff x: {0}\tdiff y: {1}", mouseLoc.X - oldx, mouseLoc.Y - oldy);
+                    //     oldx = 0;
+                    //     oldy = 0;    
+                    // }
                     
                     if(SplashKit.PointInRectangle(mouseLoc, playerCardRect)) {
                         flippedPlayerCard = playerCardToFlip;
@@ -79,7 +91,13 @@ namespace Pandemic {
                         flippedInfectionCard = infectionCardToFlip;
                         flippedInfectionCard.isFaceUp = true;
                         infectionCardToFlip = board.nextInfectionCard;
+                    } else {
+                        City clickedCity = board.isPointACity(mouseLoc);
+                        if(clickedCity != null) {
+                            Console.WriteLine("City: {0}", clickedCity.name);
+                        }
                     }
+                    
                 }
                 gameWindow.Refresh(60);
             }
