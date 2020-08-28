@@ -20,6 +20,23 @@ namespace Pandemic {
         public City location { get { return _location; } }
         public List<PlayerCard> cardsInHand { get { return _cardsInHand; } }
         public playerType type { get { return _type;} }
+        public string typeToString { 
+            get {
+                switch(_type) {
+                    case playerType.Researcher:
+                        return "Researcher";
+                    case playerType.QuarantineSpecialist:
+                        return "Quarantine Specialist";
+                    case playerType.OperationsExpert:
+                        return "Operations Expert";
+                    case playerType.Medic:
+                        return "Medic";
+                    // default needed to silence compiler warnings
+                    default:
+                        return "Player";
+                }
+            }
+        }
         public Bitmap pawn { get { return _pawn; } }
 
         // Constructor

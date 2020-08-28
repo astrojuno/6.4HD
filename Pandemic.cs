@@ -35,8 +35,9 @@ namespace Pandemic {
             // to create a good sized window. tested on 15" laptop. 
             // if you change this then you'll need to change ALL the city locations on the board also!
             double scalar = 0.25F;
-            int windowHeight = (int)(SplashKit.BitmapNamed("boardImage").Height * scalar);
-            int windowWidth = (int)(SplashKit.BitmapNamed("boardImage").Width * scalar);
+            int windowHeight = 873; //(int)(SplashKit.BitmapNamed("boardImage").Height * scalar);
+            int windowWidth = 1316; //(int)(SplashKit.BitmapNamed("boardImage").Width * scalar);
+            //Console.WriteLine("W: {0}\tH: {1}", windowWidth, windowHeight);
             gameWindow = new Window("Pandemic", windowWidth, windowHeight);
             
             board = new Board();
@@ -49,17 +50,11 @@ namespace Pandemic {
             gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(scalar, scalar));
             //board.drawRects();
 
-            // ALL BOARD DRAWING NEEDS TO HAPPEN BELOW HERE
-
             MedicPlayer medic = new MedicPlayer();
             medic.Move(board.getCity("Atlanta"));
             board.addPlayer(medic);
+            Player currentPlayer = board.players[0];
 
-            drawPlayers(board.players);
-
-            drawHUD();
-            
-            
             // Infection card pile
             InfectionCard infectionCardToFlip = board.nextInfectionCard;
             InfectionCard flippedInfectionCard = null;
@@ -76,14 +71,19 @@ namespace Pandemic {
             
             while(!gameWindow.CloseRequested) {
                 SplashKit.ProcessEvents();
-
+                // draw all the board items
+                gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(scalar, scalar));
                 infCardRect = drawInfectionCards(infectionCardToFlip, flippedInfectionCard);
                 playerCardRect = drawPlayerCards(playerCardToFlip, flippedPlayerCard);
-
+                
+                // ALL BOARD DRAWING NEEDS TO HAPPEN BELOW HERE
+                
+                drawPlayers(board.players);
+                drawHUD(medic);
                 
                 if(SplashKit.MouseClicked(MouseButton.LeftButton)){
                     Point2D mouseLoc = SplashKit.MousePosition();
-                    Console.WriteLine("X: {0}\tY: {1}", mouseLoc.X, mouseLoc.Y);
+                    //Console.WriteLine("X: {0}\tY: {1}", mouseLoc.X, mouseLoc.Y);
                     // if(oldx == 0) {
                     //     oldx = mouseLoc.X;
                     //     oldy = mouseLoc.Y;
@@ -105,10 +105,22 @@ namespace Pandemic {
                     } else {
                         City clickedCity = board.isPointACity(mouseLoc);
                         if(clickedCity != null) {
-                            Console.WriteLine("City: {0}", clickedCity.name);
+                            //Console.WriteLine("City: {0}", clickedCity.name);
                         }
                     }
-                    
+                }
+                if(SplashKit.KeyTyped(KeyCode.Num1Key)) {
+                    Console.WriteLine("1");
+                    City cityToMoveTo = getCityToMoveTo(board);
+                    if(cityToMoveTo != null) {
+                        if(currentPlayer.location.connectedCities.Contains(cityToMoveTo)) {
+                            currentPlayer.Move(cityToMoveTo);
+                            Console.WriteLine("City: {0}", currentPlayer.location);
+                        } else {
+                            Console.WriteLine("Invalid City");
+                        }
+                        
+                    }
                 }
                 gameWindow.Refresh(60);
             }
@@ -155,10 +167,45 @@ namespace Pandemic {
         }
 
         // draws the HUD that coaches players
-        private void drawHUD() {
+        private void drawHUD(Player player) {
             Rectangle hudRect = SplashKit.RectangleFrom(1096, 418, 317, 145);
-            SplashKit.DrawRectangle(Color.Coral, hudRect);
-            here
+            SplashKit.FillRectangle(Color.Black, hudRect);
+            SplashKit.DrawText(player.typeToString + " you can do one of the following:", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+5);
+            SplashKit.DrawText("1: Drive/Ferry (Move to a connected city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+15);
+            SplashKit.DrawText("2: Direct Flight (Discard a City card to move", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+25);
+            SplashKit.DrawText("directly to that city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+35);
+            SplashKit.DrawText("3: Charter Flight (Discard the City card", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+45);
+            SplashKit.DrawText("matching your city to move directly to any city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+55);
+            SplashKit.DrawText("4: Treat Disease (Remove 1 disease cube", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+65);
+            SplashKit.DrawText("from your city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+75);
+            SplashKit.DrawText("5: Share Knowledge (Give or take the City card", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+85);
+            SplashKit.DrawText("mathcing your city from a player in your city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+95);
+            SplashKit.DrawText("6: Discover a Cure (In Atlanta, discard 4 City", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+105);
+            SplashKit.DrawText("cards of the same colour to cure that disease)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+115);
+            SplashKit.DrawBitmap(player.pawn, hudRect.X-20, hudRect.Y);
+        }
+
+        // Get and return a city based on user mouse click
+        private City getCityToMoveTo(Board board) {
+            City citySelected = null;
+            while(citySelected == null) {
+                drawGetCityHUD();
+                gameWindow.Refresh(60);
+                SplashKit.ProcessEvents();
+                if(SplashKit.MouseClicked(MouseButton.LeftButton)){
+                    Point2D mouseLoc = SplashKit.MousePosition();
+                    citySelected = board.isPointACity(mouseLoc);
+                } 
+            }
+
+            return citySelected;
+        }
+
+        // draws a hud for getting a city
+        private void drawGetCityHUD() {
+            Rectangle hudRect = SplashKit.RectangleFrom(1096, 418, 317, 145);
+            SplashKit.FillRectangle(Color.Black, hudRect);
+            SplashKit.DrawText("Click on an adjoining city to select it", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+35);
         }
     }
 }
