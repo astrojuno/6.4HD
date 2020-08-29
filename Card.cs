@@ -12,11 +12,11 @@ namespace Pandemic {
         private string _city;
         protected CityGroup _group;
         private bool _isFaceUp;
-        private float _xLoc;
-        private float _yLoc;
+        private double _xLoc;
+        private double _yLoc;
         protected Bitmap _backOfCard;
         protected Bitmap _frontOfCard;
-        public float xLoc { 
+        public double xLoc { 
             get { 
                 return _xLoc; 
             }
@@ -24,7 +24,7 @@ namespace Pandemic {
                 _xLoc = value;
             } 
         }
-        public float yLoc { 
+        public double yLoc { 
             get { 
                 return _yLoc; 
             }

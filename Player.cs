@@ -56,14 +56,23 @@ namespace Pandemic {
 
         public void AddCardToHand(PlayerCard card) {
             _cardsInHand.Add(card);
-            while(_cardsInHand.Count > 7) {
-                DiscardCard();
+            // while(_cardsInHand.Count > 7) {
+            //     DiscardCard();
+            // }
+        }
+
+        public void DiscardCard(PlayerCard card) {
+            foreach(PlayerCard cardInHand in _cardsInHand) {
+                if(cardInHand == card) {
+                    _cardsInHand.Remove(cardInHand);
+                    return;
+                }
             }
         }
 
         // Private Methods
-        private void DiscardCard() {
+        // private void DiscardCard() {
             
-        }
+        // }
     }
 }

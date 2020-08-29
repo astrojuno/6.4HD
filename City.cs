@@ -18,11 +18,13 @@ namespace Pandemic {
         private List<City> _connectedCities;
         private bool _hasBase;
         private Rectangle _cityLoc;
+        private Point2D _cityCentre;
         public int infectionLevel { get { return _infectionLevel; } }
         public string name { get { return _name;} }
         public bool hasBase { get { return _hasBase; } }
         public List<City> connectedCities { get { return _connectedCities; } }
         public Rectangle boardLocation { get { return _cityLoc;} }
+        public Point2D cityCentre { get { return _cityCentre; } }
 
         // Constructor
         public City(string name, CityGroup group) {
@@ -61,8 +63,9 @@ namespace Pandemic {
             _hasBase = true;
         }
 
-        public void setBoardLocation(Rectangle boardLocation) {
+        public void setBoardLocation(Rectangle boardLocation, Point2D cityCentre) {
             _cityLoc = boardLocation;
+            _cityCentre = cityCentre;
         }
 
         // Private Methods
