@@ -11,6 +11,7 @@ namespace Pandemic {
         // Variables
         private Stack<PlayerCard> _playerCards = new Stack<PlayerCard>();
         private Stack<InfectionCard> _infectionCards = new Stack<InfectionCard>();
+        private List<InfectionCard> _flippedInfectionCards = new List<InfectionCard>();
         private string[] _blueCities = new string[] {"Atlanta", "Toronto", "Montreal", "Chicago", "Boston", "New York", "Washington", "Indianapolis"};
         private string[] _redCities = new string[] {"Los Angeles", "Phoenix", "Minneapolis", "San Francisco", "Seattle", "Calgary", "Denver", "Dallas"};
         private string[] _yellowCities = new string[] {"Monterrey", "Guadalajara", "Ciudad De Mexico", "New Orleans", "Tegucigalpa", "Havana", "Miami", "Santo Domingo"};
@@ -21,6 +22,7 @@ namespace Pandemic {
         public List<Player> players { get { return _players; } }
         public bool outOfPlayerCards { get { return _playerCards.Count <= 0; } }
         public bool outOfInfectionCards { get { return _infectionCards.Count <= 0; } }
+        public List<City> cities { get { return _cities; } }
 
 
         // Constructor
@@ -67,6 +69,11 @@ namespace Pandemic {
                 }
             }
             return null;
+        }
+
+        // put a card into the flipped infection card pile
+        public void putInfectionCardIntoFlippedPile(InfectionCard card) {
+            _flippedInfectionCards.Add(card);
         }
 
         // public void drawRects() {

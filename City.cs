@@ -25,6 +25,21 @@ namespace Pandemic {
         public List<City> connectedCities { get { return _connectedCities; } }
         public Rectangle boardLocation { get { return _cityLoc;} }
         public Point2D cityCentre { get { return _cityCentre; } }
+        public Color cityColour {
+            get {
+                switch(_group) {
+                    case CityGroup.blue:
+                        return Color.Blue;
+                    case CityGroup.red:
+                        return Color.Red;
+                    case CityGroup.yellow:
+                        return Color.Yellow;
+                    // needed to silence compiler warnings
+                    default: 
+                        return Color.Blue;
+                }
+            }
+        }
 
         // Constructor
         public City(string name, CityGroup group) {
