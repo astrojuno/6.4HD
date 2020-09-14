@@ -59,6 +59,10 @@ namespace Pandemic {
             board.addPlayer(medic);
             Player currentPlayer = board.players[0];
 
+            GeneralistPlayer generalist = new GeneralistPlayer();
+            generalist.Move(board.getCity("Atlanta"));
+            board.addPlayer(generalist);
+
             // Infection card pile
             InfectionCard infectionCardToFlip = board.nextInfectionCard;
             InfectionCard flippedInfectionCard = null;
@@ -196,22 +200,41 @@ namespace Pandemic {
                     }
                 }
                 if(SplashKit.KeyTyped(KeyCode.Num4Key)) {
-                    // medic takes all cubes
-                    if(currentPlayer.type == playerType.Medic) {
-                        for(int i = 0; i < 3; i++) {
-                            currentPlayer.location.decreaseInfection();
-                        }
-                    } else {
-                        currentPlayer.location.decreaseInfection();
-                    }
-                    // make sure it doesn't go negative
-                    while(currentPlayer.location.infectionLevel < 0) {
-                        currentPlayer.location.increaseInfection();
-                    }
+                    currentPlayer.TreatInfection();
                 }
                 if(SplashKit.KeyTyped(KeyCode.Num5Key)) {
                     // give or take a city card
-                     up to here
+                    // check if we have the card
+                    bool playerHasCard = false;
+                    foreach(PlayerCard card in currentPlayer.cardsInHand) {
+                        if(card.city.ToLower() == currentPlayer.location.name.ToLower()) {
+                            playerHasCard = true;
+                            break;
+                        }
+                    }
+                    if(playerHasCard) {
+                        PlayerCard chosenCard = null;
+                        while(chosenCard == null || chosenCard.city.ToLower() != currentPlayer.location.name.ToLower()) {
+                            chosenCard = playerChosenCard(currentPlayer, "You can share your current city card");
+                                                    
+                            if(chosenCard.city.ToLower() != currentPlayer.location.name.ToLower()) {
+                                showMessage("You can only give the card for the city you are in");
+                            }
+                        }
+                        Player playerToGiveCardTo = getPlayer();
+                    } else {
+                        // take the card from another player
+                        foreach(Player player in board.players) {
+                            foreach(PlayerCard card in player.cardsInHand) {
+                                throw this to a function, becuase it's similar to above
+                                getCurrentCityCardFromHand(player, city(String?)) -> null or card
+                            }
+                        }
+                    }
+                    // if you have the card
+                        // select player to give it to
+                    // otherwise, find which player has the card
+                        // take it from them
 
                 }
                 if(SplashKit.KeyTyped(KeyCode.Num7Key)) {
@@ -228,6 +251,7 @@ namespace Pandemic {
             SplashKit.LoadBitmap("InfectionBack", "InfectionCardBack.png");
             SplashKit.LoadBitmap("boardImage", "Board.png");
             SplashKit.LoadBitmap("medic", "medicPawn.png");
+            SplashKit.LoadBitmap("generalist", "generalistPawn.png");
         }
 
         // draws the infection card pile and returns the rect where the pile is
@@ -263,11 +287,11 @@ namespace Pandemic {
                         Xoffset = 0-PLAYER_PAWN_SPACING;
                         Yoffset = 0-PLAYER_PAWN_SPACING;
                         break;
-                    case playerType.OperationsExpert:
+                    case playerType.Dispatcher:
                         Xoffset = PLAYER_PAWN_SPACING;
                         Yoffset = 0-PLAYER_PAWN_SPACING;
                         break;
-                    case playerType.QuarantineSpecialist:
+                    case playerType.Generalist:
                         Xoffset = 0-PLAYER_PAWN_SPACING;
                         Yoffset = PLAYER_PAWN_SPACING;
                         break;
@@ -477,6 +501,30 @@ namespace Pandemic {
             double yOffset = (WINDOW_HEIGHT - SplashKit.BitmapNamed("boardImage").Height) / 2;
             
             gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(SCALAR, SCALAR));
+        }
+
+        // can this be generalised with getCard?
+        private Player getPlayer() {
+            Player chosenPlayer = null;
+            while(chosenPlayer == null) {
+                SplashKit.ProcessEvents();
+                drawHUDWarning("Click the player to give your card to");
+                if(SplashKit.MouseClicked(MouseButton.LeftButton)) {
+                    Point2D mouseLoc = SplashKit.MousePosition();
+                    foreach(Player player in board.players) {
+                        Rectangle playerRect = new Rectangle();
+                        playerRect.X = player.pawn.BoundingRectangle().X;
+                        playerRect.Y = player.pawn.BoundingRectangle().Y;
+                        playerRect.Width = player.pawn.BoundingRectangle().Width;
+                        playerRect.Height = player.pawn.BoundingRectangle().Height;
+                        if(SplashKit.PointInRectangle(mouseLoc, playerRect)) {
+                            Console.WriteLine("PLAYER");
+                        }
+                    }
+                }
+                gameWindow.Refresh(60);
+            }
+            return null;
         }
     }
 }

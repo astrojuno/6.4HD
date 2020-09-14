@@ -2,13 +2,14 @@
 // Image for player pawn used with free personal licence from https://www.pinclipart.com/pindetail/iomwR_monopoly-board-game-clipart-cliparthut-free-clipart-board/
 // John Ryder 219466419
 
+using System;
 using System.Collections.Generic;
 using SplashKitSDK;
 
 namespace Pandemic {
     // public enums for the possible player types
     public enum playerType {
-        Researcher, QuarantineSpecialist, OperationsExpert, Medic
+        Researcher, Dispatcher, Generalist, Medic
     }
     public abstract class Player {
         // Variables
@@ -16,19 +17,21 @@ namespace Pandemic {
         private City _location;
         private playerType _type;
         protected Bitmap _pawn;
+        protected int _turns = 4;
 
         public City location { get { return _location; } }
         public List<PlayerCard> cardsInHand { get { return _cardsInHand; } }
         public playerType type { get { return _type;} }
+        public int turns { get { return _turns; } }
         public string typeToString { 
             get {
                 switch(_type) {
                     case playerType.Researcher:
                         return "Researcher";
-                    case playerType.QuarantineSpecialist:
-                        return "Quarantine Specialist";
-                    case playerType.OperationsExpert:
-                        return "Operations Expert";
+                    case playerType.Dispatcher:
+                        return "Dispatcher";
+                    case playerType.Generalist:
+                        return "Generalist";
                     case playerType.Medic:
                         return "Medic";
                     // default needed to silence compiler warnings
@@ -46,9 +49,45 @@ namespace Pandemic {
         }
 
         // Public Methods
-        public abstract void TreatInfection();
-        public abstract void DiscoverCure();
-        public abstract void Build();
+        public virtual void TreatInfection() {
+            location.decreaseInfection();
+        }
+        
+         // you need 4 of a colour cards, and to be in a city with a base
+        public virtual void DiscoverCure() {
+            if(location.hasBase) {
+                // see if you have 4 of a colour of card
+                int blue = 0;
+                int red = 0;
+                int yellow = 0;
+                foreach(PlayerCard card in cardsInHand) {
+                    switch(card.group) {
+                        case CityGroup.blue:
+                            blue++;
+                            break;
+                        case CityGroup.red:
+                            red++;
+                            break;
+                        case CityGroup.yellow:
+                            yellow++;
+                            break;
+                    }
+                }
+                
+                if(blue >= 4) {
+                    removeFourCards(CityGroup.blue);
+                    //board.cure(CityGroup.blue);
+                } else if(red >= 4) {
+                    removeFourCards(CityGroup.red);
+                } else if(yellow >= 4) {
+                    removeFourCards(CityGroup.yellow);
+                }
+
+            } else {
+                Console.WriteLine("No base");
+            }
+        }
+        //public abstract void Build();
         
         public void Move(City toCity) {
             _location = toCity;
@@ -71,8 +110,19 @@ namespace Pandemic {
         }
 
         // Private Methods
-        // private void DiscardCard() {
-            
-        // }
+       // Private Methods
+        // remove 4 of a colour of card from the hand
+        private void removeFourCards(CityGroup cardColour) {
+            int removedCount = 0;
+            foreach(PlayerCard card in cardsInHand) {
+                if(card.group == cardColour) {
+                    cardsInHand.Remove(card);
+                    removedCount++;
+                    if(removedCount >= 4) {
+                        return;
+                    }
+                }
+            }
+        }
     }
 }

@@ -74,9 +74,9 @@ namespace Pandemic {
             _connectedCities.Add(cityToAdd);
         }
 
-        public void buildBase() {
-            _hasBase = true;
-        }
+        // public void buildBase() {
+        //     _hasBase = true;
+        // }
 
         public void setBoardLocation(Rectangle boardLocation, Point2D cityCentre) {
             _cityLoc = boardLocation;
