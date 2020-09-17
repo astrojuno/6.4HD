@@ -76,6 +76,12 @@ namespace Pandemic {
             _flippedInfectionCards.Add(card);
         }
 
+        // transfer a card from one player to another
+        public void transferCard(Player from, Player to, PlayerCard card) {
+            from.DiscardCard(card);
+            to.AddCardToHand(card);
+        }
+
         // public void drawRects() {
         //     foreach(City city in _cities) {
         //         SplashKit.DrawRectangle(Color.BrightGreen, city.boardLocation);

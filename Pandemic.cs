@@ -82,41 +82,52 @@ namespace Pandemic {
                                             "Bottom left is your player card pile. You have two of these already, and you'll draw two more each turn",
                                             "Top right is your outbreak tracker",
                                             "The current player, and their turn options are here on the right"};
-            int count = 1;
-            showMessage(teaching[0]);
+            //int count = 0;
             gameWindow.Refresh(60);
-            while(count < teaching.Length) {
-                SplashKit.ProcessEvents();
-                if(SplashKit.MouseClicked(MouseButton.LeftButton) || SplashKit.KeyTyped(KeyCode.ReturnKey) || SplashKit.KeyTyped(KeyCode.SpaceKey)) {
-                    showMessage(teaching[count]);
-                    count++;
-                }
+            for(int i = 0; i < teaching.Length; i++) {
+                showMessage(teaching[i]);
                 gameWindow.Refresh(60);
             }
+
+            // showMessage(teaching[0]);
+            // gameWindow.Refresh(60);
+            // while(count < teaching.Length) {
+            //     SplashKit.ProcessEvents();
+            //     if(SplashKit.MouseClicked(MouseButton.LeftButton) || SplashKit.KeyTyped(KeyCode.ReturnKey) || SplashKit.KeyTyped(KeyCode.SpaceKey)) {
+            //         showMessage(teaching[count]);
+            //         count++;
+            //     }
+            //     gameWindow.Refresh(60);
+            // }
             
             // initial infection
             flippedInfectionCard = infectBoard(board);
 
             showMessage("OK, now it's time to play. The current player and options are here on the right ->");
-            gameWindow.Refresh(60);
-            while(true) {
-                SplashKit.ProcessEvents();
-                if(SplashKit.MouseClicked(MouseButton.LeftButton) || SplashKit.KeyTyped(KeyCode.ReturnKey) || SplashKit.KeyTyped(KeyCode.SpaceKey)) {
-                    break;
-                }
-                gameWindow.Refresh(60);
-            }
-
-            medic.AddCardToHand(board.nextPlayerCard);
-            medic.AddCardToHand(board.nextPlayerCard);
-            // for(int i = 0; i < 15; i++) {
-            //     medic.AddCardToHand(board.nextPlayerCard);
+            // gameWindow.Refresh(60);
+            // while(true) {
+            //     SplashKit.ProcessEvents();
+            //     if(SplashKit.MouseClicked(MouseButton.LeftButton) || SplashKit.KeyTyped(KeyCode.ReturnKey) || SplashKit.KeyTyped(KeyCode.SpaceKey)) {
+            //         break;
+            //     }
+            //     gameWindow.Refresh(60);
             // }
+
+            // deal two cards to each player
+            foreach(Player player in board.players) {
+                player.AddCardToHand(board.nextPlayerCard);
+                player.AddCardToHand(board.nextPlayerCard);
+            }
+            
+            for(int i = 0; i < 12; i++) {
+                generalist.AddCardToHand(board.nextPlayerCard);
+            }
             
             while(!gameWindow.CloseRequested) {
                 SplashKit.ProcessEvents();
                 // draw all the board items
-                gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(SCALAR, SCALAR));
+                //gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(SCALAR, SCALAR));
+                drawBoard();
                 infCardRect = drawInfectionCards(infectionCardToFlip, flippedInfectionCard);
                 playerCardRect = drawPlayerCards(playerCardToFlip, flippedPlayerCard);
                 
@@ -135,34 +146,6 @@ namespace Pandemic {
                     }
                 }
                 
-                // if(SplashKit.MouseClicked(MouseButton.LeftButton)){
-                //     Point2D mouseLoc = SplashKit.MousePosition();
-                //     //Console.WriteLine("X: {0}\tY: {1}", mouseLoc.X, mouseLoc.Y);
-                //     // if(oldx == 0) {
-                //     //     oldx = mouseLoc.X;
-                //     //     oldy = mouseLoc.Y;
-                //     // } else {
-                //     //     Console.WriteLine("diff x: {0}\tdiff y: {1}", mouseLoc.X - oldx, mouseLoc.Y - oldy);
-                //     //     oldx = 0;
-                //     //     oldy = 0;    
-                //     // }
-                    
-                //     if(SplashKit.PointInRectangle(mouseLoc, playerCardRect)) {
-                //         flippedPlayerCard = playerCardToFlip;
-                //         flippedPlayerCard.isFaceUp = true;
-                //         playerCardToFlip = board.nextPlayerCard;
-                //     }
-                //     else if(SplashKit.PointInRectangle(mouseLoc, infCardRect)) {
-                //         flippedInfectionCard = infectionCardToFlip;
-                //         flippedInfectionCard.isFaceUp = true;
-                //         infectionCardToFlip = board.nextInfectionCard;
-                //     } else {
-                //         City clickedCity = board.isPointACity(mouseLoc);
-                //         if(clickedCity != null) {
-                //             //Console.WriteLine("City: {0}", clickedCity.name);
-                //         }
-                //     }
-                // }
                 if(SplashKit.KeyTyped(KeyCode.Num1Key)) {
                     City cityToMoveTo = null;
                     while(cityToMoveTo == null) {
@@ -184,7 +167,8 @@ namespace Pandemic {
                 }
                 if(SplashKit.KeyTyped(KeyCode.Num3Key)) {
                     PlayerCard chosenCard = playerChosenCard(currentPlayer, "Choose your current city card");
-                    gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(SCALAR, SCALAR));
+                    //gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(SCALAR, SCALAR));
+                    drawBoard();
                     drawPlayers(board.players);
 
                     if(currentPlayer.location == board.getCity(chosenCard.city)) {
@@ -204,38 +188,73 @@ namespace Pandemic {
                 }
                 if(SplashKit.KeyTyped(KeyCode.Num5Key)) {
                     // give or take a city card
-                    // check if we have the card
-                    bool playerHasCard = false;
-                    foreach(PlayerCard card in currentPlayer.cardsInHand) {
-                        if(card.city.ToLower() == currentPlayer.location.name.ToLower()) {
-                            playerHasCard = true;
-                            break;
+                    // you must be sharing the city with someone
+                    bool locationShared = false;
+                    foreach(Player player in board.players) {
+                        if(player.location == currentPlayer.location && player != currentPlayer) {
+                            locationShared = true;
                         }
                     }
-                    if(playerHasCard) {
-                        PlayerCard chosenCard = null;
-                        while(chosenCard == null || chosenCard.city.ToLower() != currentPlayer.location.name.ToLower()) {
-                            chosenCard = playerChosenCard(currentPlayer, "You can share your current city card");
-                                                    
-                            if(chosenCard.city.ToLower() != currentPlayer.location.name.ToLower()) {
-                                showMessage("You can only give the card for the city you are in");
+                    if(locationShared) {
+                        // check if we have the card
+                        if(doesPlayerHaveCard(currentPlayer)) {
+                            PlayerCard chosenCard = null;
+                            while(chosenCard == null || chosenCard.city.ToLower() != currentPlayer.location.name.ToLower()) {
+                                chosenCard = playerChosenCard(currentPlayer, "You can share your current city card");
+                                                        
+                                if(chosenCard.city.ToLower() != currentPlayer.location.name.ToLower()) {
+                                    showMessage("You can only give the card for the city you are in");
+                                    drawBoard();
+                                    infCardRect = drawInfectionCards(infectionCardToFlip, flippedInfectionCard);
+                                    playerCardRect = drawPlayerCards(playerCardToFlip, flippedPlayerCard);
+                                    drawPlayers(board.players);
+                                    drawHUD(currentPlayer);
+                                    drawCityInfections();
+                                    gameWindow.Refresh(60);
+                                }
                             }
-                        }
-                        Player playerToGiveCardTo = getPlayer();
-                    } else {
-                        // take the card from another player
-                        foreach(Player player in board.players) {
-                            foreach(PlayerCard card in player.cardsInHand) {
-                                throw this to a function, becuase it's similar to above
-                                getCurrentCityCardFromHand(player, city(String?)) -> null or card
+                            // redraw the board to remove the card images
+                            drawBoard();
+                            infCardRect = drawInfectionCards(infectionCardToFlip, flippedInfectionCard);
+                            playerCardRect = drawPlayerCards(playerCardToFlip, flippedPlayerCard);
+                            drawPlayers(board.players);
+                            drawHUD(currentPlayer);
+                            drawCityInfections();
+                            gameWindow.Refresh(60);
+                            
+                            // get the player to give the card to
+                            Player playerToGiveCardTo = getPlayer();
+                            board.transferCard(currentPlayer, playerToGiveCardTo, chosenCard);
+                        } else {
+                            // take the card from another player
+                            Player playerWithCard = null;
+                            // find the player with the card
+                            foreach(Player player in board.players) {
+                                if(doesPlayerHaveCard(player)) {
+                                    playerWithCard = player;
+                                    break;
+                                }
                             }
-                        }
-                    }
-                    // if you have the card
-                        // select player to give it to
-                    // otherwise, find which player has the card
-                        // take it from them
 
+                            // see if they're sharing your location
+                            if(playerWithCard != null) {
+                                if(playerWithCard.location == currentPlayer.location) {
+                                    // take the card
+                                    PlayerCard cardToTransfer = null;
+                                    foreach(PlayerCard card in playerWithCard.cardsInHand) {
+                                        if(card.city.ToLower() == playerWithCard.location.name.ToLower()) {
+                                            cardToTransfer = card;
+                                        }
+                                    }
+                                    string alert = "Taking " + currentPlayer.location + " card from " +  playerWithCard.type;
+                                    showMessage(alert);
+                                    board.transferCard(playerWithCard, currentPlayer, cardToTransfer);
+                                }
+                            }
+                        }
+                    } else {
+                        showMessage("You must be sharing your city with another player to share knowledge");
+                    }
                 }
                 if(SplashKit.KeyTyped(KeyCode.Num7Key)) {
                     showCards(currentPlayer);
@@ -299,16 +318,13 @@ namespace Pandemic {
                         Xoffset = PLAYER_PAWN_SPACING;
                         Yoffset = PLAYER_PAWN_SPACING;
                         break;
-                    // needed to silence compiler warnings
-                    // default: 
-                    //     Xoffset = 0-PLAYER_PAWN_SPACING;
-                    //     Yoffset = 0-PLAYER_PAWN_SPACING;
-                    //     break;
                 }
                 playerX = player.location.cityCentre.X + Xoffset;
                 playerY = player.location.cityCentre.Y + Yoffset;
-                //playerX = player.location.boardLocation.X + (player.location.boardLocation.Width / 2) - PLAYER_PAWN_SPACING;
-                //playerY = player.location.boardLocation.Y + (player.location.boardLocation.Height / 2) - PLAYER_PAWN_SPACING;
+                
+                player.xloc = playerX;
+                player.yloc = playerY;
+
                 SplashKit.DrawBitmap(player.pawn, playerX, playerY);
             }
         }
@@ -410,7 +426,6 @@ namespace Pandemic {
                 SplashKit.ProcessEvents();
                 displayCards(player);
                 if(SplashKit.MouseClicked(MouseButton.LeftButton) || SplashKit.KeyTyped(KeyCode.ReturnKey) || SplashKit.KeyTyped(KeyCode.SpaceKey) || SplashKit.KeyTyped(KeyCode.Num7Key)) { 
-                    
                     return;
                 }
                 gameWindow.Refresh(60);
@@ -436,7 +451,6 @@ namespace Pandemic {
                             return card;
                         }
                     }
-
                 }
                 gameWindow.Refresh(60);
             }
@@ -477,6 +491,13 @@ namespace Pandemic {
             double textY = ((messageRect.Height - SplashKit.TextHeight(message, "roboto", 20)) / 2) + messageRect.Y;
             gameWindow.FillRectangle(Color.BurlyWood, messageRect);
             gameWindow.DrawText(message, Color.Black, "roboto",  20, textX, textY);
+            gameWindow.Refresh(60);
+            while(true) {
+                SplashKit.ProcessEvents();
+                if(SplashKit.MouseClicked(MouseButton.LeftButton) || SplashKit.KeyTyped(KeyCode.ReturnKey) || SplashKit.KeyTyped(KeyCode.SpaceKey) || SplashKit.KeyTyped(KeyCode.EscapeKey)) { 
+                    return;
+                }
+            }
         }
 
         // draws the infection squares on the cities
@@ -513,18 +534,28 @@ namespace Pandemic {
                     Point2D mouseLoc = SplashKit.MousePosition();
                     foreach(Player player in board.players) {
                         Rectangle playerRect = new Rectangle();
-                        playerRect.X = player.pawn.BoundingRectangle().X;
-                        playerRect.Y = player.pawn.BoundingRectangle().Y;
+                        playerRect.X = player.xloc;
+                        playerRect.Y = player.yloc;
                         playerRect.Width = player.pawn.BoundingRectangle().Width;
                         playerRect.Height = player.pawn.BoundingRectangle().Height;
                         if(SplashKit.PointInRectangle(mouseLoc, playerRect)) {
-                            Console.WriteLine("PLAYER");
+                            return player;
                         }
                     }
                 }
                 gameWindow.Refresh(60);
             }
             return null;
+        }
+
+        // returns true if a city card is in the players hand
+        private bool doesPlayerHaveCard(Player player) {
+            foreach(PlayerCard card in player.cardsInHand) {
+                if(card.city.ToLower() == player.location.name.ToLower()) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

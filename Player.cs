@@ -16,13 +16,22 @@ namespace Pandemic {
         private List<PlayerCard> _cardsInHand;
         private City _location;
         private playerType _type;
+        private double _xloc;
+        private double _yloc;
         protected Bitmap _pawn;
         protected int _turns = 4;
-
         public City location { get { return _location; } }
         public List<PlayerCard> cardsInHand { get { return _cardsInHand; } }
         public playerType type { get { return _type;} }
         public int turns { get { return _turns; } }
+        public double xloc {
+            get { return _xloc; }
+            set { _xloc = value; }
+        }
+        public double yloc {
+            get { return _yloc; }
+            set { _yloc = value; }
+        }
         public string typeToString { 
             get {
                 switch(_type) {
