@@ -50,10 +50,9 @@ namespace Pandemic {
             double xOffset = (WINDOW_WIDTH - SplashKit.BitmapNamed("boardImage").Width) / 2;
             double yOffset = (WINDOW_HEIGHT - SplashKit.BitmapNamed("boardImage").Height) / 2;
             
-            //gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(SCALAR, SCALAR));
             drawBoard();
-            //board.drawRects();
 
+            // create the players
             MedicPlayer medic = new MedicPlayer();
             medic.Move(board.getCity("Atlanta"));
             board.addPlayer(medic);
@@ -88,31 +87,12 @@ namespace Pandemic {
                 showMessage(teaching[i]);
                 gameWindow.Refresh(60);
             }
-
-            // showMessage(teaching[0]);
-            // gameWindow.Refresh(60);
-            // while(count < teaching.Length) {
-            //     SplashKit.ProcessEvents();
-            //     if(SplashKit.MouseClicked(MouseButton.LeftButton) || SplashKit.KeyTyped(KeyCode.ReturnKey) || SplashKit.KeyTyped(KeyCode.SpaceKey)) {
-            //         showMessage(teaching[count]);
-            //         count++;
-            //     }
-            //     gameWindow.Refresh(60);
-            // }
-            
+ 
             // initial infection
             flippedInfectionCard = infectBoard(board);
 
             showMessage("OK, now it's time to play. The current player and options are here on the right ->");
-            // gameWindow.Refresh(60);
-            // while(true) {
-            //     SplashKit.ProcessEvents();
-            //     if(SplashKit.MouseClicked(MouseButton.LeftButton) || SplashKit.KeyTyped(KeyCode.ReturnKey) || SplashKit.KeyTyped(KeyCode.SpaceKey)) {
-            //         break;
-            //     }
-            //     gameWindow.Refresh(60);
-            // }
-
+            
             // deal two cards to each player
             foreach(Player player in board.players) {
                 player.AddCardToHand(board.nextPlayerCard);
@@ -126,7 +106,6 @@ namespace Pandemic {
             while(!gameWindow.CloseRequested) {
                 SplashKit.ProcessEvents();
                 // draw all the board items
-                //gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(SCALAR, SCALAR));
                 drawBoard();
                 infCardRect = drawInfectionCards(infectionCardToFlip, flippedInfectionCard);
                 playerCardRect = drawPlayerCards(playerCardToFlip, flippedPlayerCard);
@@ -137,15 +116,23 @@ namespace Pandemic {
                 drawPlayers(board.players);
                 drawHUD(currentPlayer);
                 drawCityInfections();
+                drawDiseaseLevels(board.diseases);
 
                 // check for game ending conditions
-                if(board.outOfInfectionCards || board.outOfPlayerCards) {
+                bool outOfCubes = false;
+                foreach(Disease disease in board.diseases) {
+                    if(disease.hasLostGame()) {
+                        outOfCubes = true;
+                    }
+                }
+                if(board.outOfInfectionCards || board.outOfPlayerCards || outOfCubes) {
                     while(true) {
                         gameWindow.Clear(Color.Red);
                         gameWindow.Refresh(60);
                     }
                 }
                 
+                // move to an adjoining city
                 if(SplashKit.KeyTyped(KeyCode.Num1Key)) {
                     City cityToMoveTo = null;
                     while(cityToMoveTo == null) {
@@ -159,15 +146,16 @@ namespace Pandemic {
                         }
                     } 
                 }
+                // fly to a city whose card you discard
                 if(SplashKit.KeyTyped(KeyCode.Num2Key)) {
                     PlayerCard chosenCard = playerChosenCard(currentPlayer, "Choose city card to move to that city");
                     currentPlayer.DiscardCard(chosenCard);
                     flippedPlayerCard = chosenCard;
                     currentPlayer.Move(board.getCity(chosenCard.city));
                 }
+                // fly to any city by discarding your current city card
                 if(SplashKit.KeyTyped(KeyCode.Num3Key)) {
                     PlayerCard chosenCard = playerChosenCard(currentPlayer, "Choose your current city card");
-                    //gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(SCALAR, SCALAR));
                     drawBoard();
                     drawPlayers(board.players);
 
@@ -183,9 +171,17 @@ namespace Pandemic {
                         } 
                     }
                 }
+                // remove a disease cube
                 if(SplashKit.KeyTyped(KeyCode.Num4Key)) {
+                    // calculate how many cubes to put back
+                    int previousInfectionLevel = currentPlayer.location.infectionLevel;
                     currentPlayer.TreatInfection();
+                    int newInfectionLevel = currentPlayer.location.infectionLevel;
+                    Disease diseaseAtCity = board.GetDisease(currentPlayer.location.type);
+                    diseaseAtCity.returnCube(previousInfectionLevel - newInfectionLevel);
                 }
+                // share knowledge. transfer the city card for the city you are in to another
+                // player who is also in that city
                 if(SplashKit.KeyTyped(KeyCode.Num5Key)) {
                     // give or take a city card
                     // you must be sharing the city with someone
@@ -256,6 +252,21 @@ namespace Pandemic {
                         showMessage("You must be sharing your city with another player to share knowledge");
                     }
                 }
+                // discover a cure
+                if(SplashKit.KeyTyped(KeyCode.Num6Key)) {
+                    // check location is atlanta
+                    if(currentPlayer.location == board.getCity("Atlanta")) {
+                        // check you have 4 of the right cards 
+                        List<CityGroup> diseasesPlayerCanCure = currentPlayer.CanDiscoverCure();
+
+                    } else {
+                        showMessage("You can only discover a cure in Atlanta");
+                    }
+                    
+                    // check if disease is cured already
+                    // cure the disease
+                }
+                // show your player cards
                 if(SplashKit.KeyTyped(KeyCode.Num7Key)) {
                     showCards(currentPlayer);
                 }
@@ -357,16 +368,20 @@ namespace Pandemic {
                         infectionCardToFlip = board.nextInfectionCard;
                         drawInfectionCards(infectionCardToFlip, flippedInfectionCard);
                         City cityToInfect = board.getCity(flippedInfectionCard.city);
+                        Disease currentDisease = board.GetDisease(cityToInfect.type);
                         if(infectedCities < 2) {
                             for(int i = 0; i < 3; i++) {
                                 cityToInfect.increaseInfection();
+                                currentDisease.useCube(1);
                             }
                         } else if(infectedCities < 4) {
                             for(int i = 0; i < 2; i++) {
                                 cityToInfect.increaseInfection();
+                                currentDisease.useCube(1);
                             }
                         } else {
                             cityToInfect.increaseInfection();
+                            currentDisease.useCube(1);
                         }
                         infectedCities++;
                     }
@@ -556,6 +571,58 @@ namespace Pandemic {
                 }
             }
             return false;
+        }
+
+        // allocates the drawing of the disease info
+        private void drawDiseaseLevels(List<Disease> diseases) {
+            double redRectX = WINDOW_WIDTH - 195;
+            double rectY = WINDOW_HEIGHT - 65;
+            double yellowRectX = redRectX + 65;
+            double blueRectX = yellowRectX + 65;
+            
+        
+            foreach(Disease disease in diseases) {
+                switch(disease.type) {
+                    case CityGroup.red:
+                        drawDiseaseHUD(redRectX, rectY, SplashKit.ColorRed(), disease.cubes);
+                        break;
+                    case CityGroup.yellow:
+                        drawDiseaseHUD(yellowRectX, rectY, SplashKit.ColorYellow(), disease.cubes);
+                        break;
+                    case CityGroup.blue:
+                        drawDiseaseHUD(blueRectX, rectY, SplashKit.ColorBlue(), disease.cubes);
+                        break;
+                }
+            }
+            
+            gameWindow.Refresh(60);
+        }
+
+        // draws the disease info
+        private void drawDiseaseHUD(double rectX, double rectY, Color diseaseColour, int diseaseCubesLeft) {
+            // create the rectangle
+            Rectangle diseaseRect = new Rectangle();
+            diseaseRect.X = rectX;
+            diseaseRect.Y = rectY;
+            diseaseRect.Width = 40;
+            diseaseRect.Height = 45;
+            SplashKit.FillRectangle(diseaseColour, diseaseRect);
+
+            // put the title in the rectangle
+            string cubesLeft = "Cubes Left";
+            int cubesWidth = SplashKit.TextWidth(cubesLeft, SplashKit.FontNamed("roboto"), 8);
+            double cubesX = diseaseRect.X + ((diseaseRect.Width - cubesWidth) / 2);
+            double cubesY = diseaseRect.Y + ((diseaseRect.Width - cubesWidth) / 2);
+            SplashKit.DrawText(cubesLeft, SplashKit.ColorBlack(), SplashKit.FontNamed("roboto"), 8, cubesX, cubesY);
+
+            // put the cube count in the rect
+            string cubeNumber = diseaseCubesLeft.ToString();
+            int cubeNoWidth = SplashKit.TextWidth(cubeNumber, SplashKit.FontNamed("roboto"), 16);
+            int cubeNoHeight = SplashKit.TextHeight(cubeNumber, SplashKit.FontNamed("roboto"), 16);
+            double cubeNoX = diseaseRect.X + ((diseaseRect.Width - cubeNoWidth) / 2);
+            double cubeNoY = diseaseRect.Y + ((diseaseRect.Height - cubeNoHeight) / 2);
+            SplashKit.DrawText(cubeNumber, SplashKit.ColorBlack(), SplashKit.FontNamed("roboto"), 16, cubeNoX, cubeNoY);
+
         }
     }
 }

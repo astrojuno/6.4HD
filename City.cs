@@ -25,6 +25,7 @@ namespace Pandemic {
         public List<City> connectedCities { get { return _connectedCities; } }
         public Rectangle boardLocation { get { return _cityLoc;} }
         public Point2D cityCentre { get { return _cityCentre; } }
+        public CityGroup type { get { return _group; } }
         public Color cityColour {
             get {
                 switch(_group) {
@@ -73,10 +74,6 @@ namespace Pandemic {
         public void addConnectedCity(City cityToAdd) {
             _connectedCities.Add(cityToAdd);
         }
-
-        // public void buildBase() {
-        //     _hasBase = true;
-        // }
 
         public void setBoardLocation(Rectangle boardLocation, Point2D cityCentre) {
             _cityLoc = boardLocation;

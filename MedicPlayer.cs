@@ -1,7 +1,6 @@
 // Medic class of player for Pandemic 
 // John Ryder 219466419
 
-using System;
 using SplashKitSDK;
 
 namespace Pandemic {
@@ -18,19 +17,5 @@ namespace Pandemic {
                 base.location.decreaseInfection();
             }
         }
-
-
-        // you need the city card you are in to build there
-        // public override void Build() {
-        //     foreach(PlayerCard card in base.cardsInHand) { 
-        //         if(card.city == location.name) {
-        //             location.buildBase();
-        //             return;
-        //         }
-        //     }
-        //     Console.WriteLine("Don't have the correct card");
-        // }
-
-        
     }
 }

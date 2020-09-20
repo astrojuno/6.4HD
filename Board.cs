@@ -15,6 +15,7 @@ namespace Pandemic {
         private string[] _blueCities = new string[] {"Atlanta", "Toronto", "Montreal", "Chicago", "Boston", "New York", "Washington", "Indianapolis"};
         private string[] _redCities = new string[] {"Los Angeles", "Phoenix", "Minneapolis", "San Francisco", "Seattle", "Calgary", "Denver", "Dallas"};
         private string[] _yellowCities = new string[] {"Monterrey", "Guadalajara", "Ciudad De Mexico", "New Orleans", "Tegucigalpa", "Havana", "Miami", "Santo Domingo"};
+        private List<Disease> _diseases = new List<Disease>();
         private List<Player> _players;
         private List<City> _cities = new List<City>();
         public PlayerCard nextPlayerCard { get { return _playerCards.Pop(); } }
@@ -23,6 +24,7 @@ namespace Pandemic {
         public bool outOfPlayerCards { get { return _playerCards.Count <= 0; } }
         public bool outOfInfectionCards { get { return _infectionCards.Count <= 0; } }
         public List<City> cities { get { return _cities; } }
+        public List<Disease> diseases { get { return _diseases; } }
 
 
         // Constructor
@@ -30,6 +32,7 @@ namespace Pandemic {
             createPlayerCards();
             createInfectionCards();
             loadCities();
+            createDiseases();
             _players = new List<Player>();
         }
 
@@ -82,6 +85,17 @@ namespace Pandemic {
             to.AddCardToHand(card);
         }
 
+        // return the disease given the type
+        public Disease GetDisease(CityGroup type) {
+            foreach(Disease disease in _diseases) {
+                if(disease.type == type) {
+                    return disease;
+                }
+            }
+            return null;
+        }
+
+
         // public void drawRects() {
         //     foreach(City city in _cities) {
         //         SplashKit.DrawRectangle(Color.BrightGreen, city.boardLocation);
@@ -126,6 +140,13 @@ namespace Pandemic {
             Random rnd = new Random();
             foreach (InfectionCard card in cardList.OrderBy(i => rnd.Next())) {
                 _infectionCards.Push(card);
+            }
+        }
+
+        // create the diseases for the game
+        private void createDiseases() {
+            foreach(CityGroup diseaseColour in Enum.GetValues(typeof(CityGroup))) {
+                _diseases.Add(new Disease(diseaseColour));
             }
         }
 

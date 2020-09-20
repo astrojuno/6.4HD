@@ -63,7 +63,8 @@ namespace Pandemic {
         }
         
          // you need 4 of a colour cards, and to be in a city with a base
-        public virtual void DiscoverCure() {
+        public virtual List<CityGroup> CanDiscoverCure() {
+            List<CityGroup> curableOptions = new List<CityGroup>();
             if(location.hasBase) {
                 // see if you have 4 of a colour of card
                 int blue = 0;
@@ -84,17 +85,21 @@ namespace Pandemic {
                 }
                 
                 if(blue >= 4) {
-                    removeFourCards(CityGroup.blue);
+                    curableOptions.Add(CityGroup.blue);
+                    //removeFourCards(CityGroup.blue);
                     //board.cure(CityGroup.blue);
-                } else if(red >= 4) {
-                    removeFourCards(CityGroup.red);
-                } else if(yellow >= 4) {
-                    removeFourCards(CityGroup.yellow);
+                } 
+                if(red >= 4) {
+                    curableOptions.Add(CityGroup.red);
+                    //removeFourCards(CityGroup.red);
+                }
+                if(yellow >= 4) {
+                    curableOptions.Add(CityGroup.yellow);
+                    //removeFourCards(CityGroup.yellow);
                 }
 
-            } else {
-                Console.WriteLine("No base");
-            }
+            } 
+            return curableOptions;
         }
         //public abstract void Build();
         
