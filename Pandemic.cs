@@ -80,7 +80,12 @@ namespace Pandemic {
                                             "Next to that is your infection rate, that's how many infection cards you have to flip each round",
                                             "Bottom left is your player card pile. You have two of these already, and you'll draw two more each turn",
                                             "Top right is your outbreak tracker",
-                                            "The current player, and their turn options are here on the right"};
+                                            "The current player, and their turn options are here on the right",
+                                            "You can lose in many ways...",
+                                            "If you run out of cubes for a disease, you'll lose",
+                                            "If you outbreak 4 times, you'll lose",
+                                            "If you run out of player cards in the pile, you'll lose",
+                                            "You win if you cure all diseases. Cure a disease by handing in 4 cards of that colour in Atlanta"};
             //int count = 0;
             gameWindow.Refresh(60);
             for(int i = 0; i < teaching.Length; i++) {
@@ -258,6 +263,22 @@ namespace Pandemic {
                     if(currentPlayer.location == board.getCity("Atlanta")) {
                         // check you have 4 of the right cards 
                         List<CityGroup> diseasesPlayerCanCure = currentPlayer.CanDiscoverCure();
+                        if(diseasesPlayerCanCure.Count != 0) {
+                            bool hasCured = false;
+                            foreach(CityGroup diseaseColour in diseasesPlayerCanCure) {
+                                Disease diseaseToCheck = board.GetDisease(diseaseColour);
+                                if(!diseaseToCheck.isCured) {
+                                    diseaseToCheck.cureDisease();
+                                    hasCured = true;
+                                    break;
+                                }
+                            }
+                            if(!hasCured) {
+                                showMessage("You don't have the right city cards to cure any diseases");
+                            }
+                        } else {
+                            showMessage("You need 4 cards of the same colour to cure a disease");
+                        }
 
                     } else {
                         showMessage("You can only discover a cure in Atlanta");
@@ -584,13 +605,13 @@ namespace Pandemic {
             foreach(Disease disease in diseases) {
                 switch(disease.type) {
                     case CityGroup.red:
-                        drawDiseaseHUD(redRectX, rectY, SplashKit.ColorRed(), disease.cubes);
+                        drawDiseaseHUD(redRectX, rectY, SplashKit.ColorRed(), disease.cubes, disease.isCured);
                         break;
                     case CityGroup.yellow:
-                        drawDiseaseHUD(yellowRectX, rectY, SplashKit.ColorYellow(), disease.cubes);
+                        drawDiseaseHUD(yellowRectX, rectY, SplashKit.ColorYellow(), disease.cubes, disease.isCured);
                         break;
                     case CityGroup.blue:
-                        drawDiseaseHUD(blueRectX, rectY, SplashKit.ColorBlue(), disease.cubes);
+                        drawDiseaseHUD(blueRectX, rectY, SplashKit.ColorBlue(), disease.cubes, disease.isCured);
                         break;
                 }
             }
@@ -599,7 +620,16 @@ namespace Pandemic {
         }
 
         // draws the disease info
-        private void drawDiseaseHUD(double rectX, double rectY, Color diseaseColour, int diseaseCubesLeft) {
+        private void drawDiseaseHUD(double rectX, double rectY, Color diseaseColour, int diseaseCubesLeft, bool isCured) {
+            string cubesLeft = "Cubes Left";
+            string cubeNumber = diseaseCubesLeft.ToString();
+
+            if(isCured) {
+                diseaseColour = SplashKit.ColorGreen();
+                cubesLeft = "";
+                cubeNumber = "✔️";
+            }
+
             // create the rectangle
             Rectangle diseaseRect = new Rectangle();
             diseaseRect.X = rectX;
@@ -609,14 +639,12 @@ namespace Pandemic {
             SplashKit.FillRectangle(diseaseColour, diseaseRect);
 
             // put the title in the rectangle
-            string cubesLeft = "Cubes Left";
             int cubesWidth = SplashKit.TextWidth(cubesLeft, SplashKit.FontNamed("roboto"), 8);
             double cubesX = diseaseRect.X + ((diseaseRect.Width - cubesWidth) / 2);
             double cubesY = diseaseRect.Y + ((diseaseRect.Width - cubesWidth) / 2);
             SplashKit.DrawText(cubesLeft, SplashKit.ColorBlack(), SplashKit.FontNamed("roboto"), 8, cubesX, cubesY);
 
             // put the cube count in the rect
-            string cubeNumber = diseaseCubesLeft.ToString();
             int cubeNoWidth = SplashKit.TextWidth(cubeNumber, SplashKit.FontNamed("roboto"), 16);
             int cubeNoHeight = SplashKit.TextHeight(cubeNumber, SplashKit.FontNamed("roboto"), 16);
             double cubeNoX = diseaseRect.X + ((diseaseRect.Width - cubeNoWidth) / 2);

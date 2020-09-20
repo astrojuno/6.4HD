@@ -10,6 +10,7 @@ namespace Pandemic {
         private CityGroup _type;
         public int cubes { get { return _cubes; } }
         public CityGroup type { get { return _type; } }
+        public bool isCured { get { return _cured; } }
 
         public Disease(CityGroup type) {
             _type = type;
@@ -29,6 +30,11 @@ namespace Pandemic {
 
         public bool hasLostGame() {
             return _cubes <= 0;
+        }
+
+        // cure the disease
+        public void cureDisease() {
+            _cured = true;
         }
     }
 }
