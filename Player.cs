@@ -123,20 +123,21 @@ namespace Pandemic {
             }
         }
 
-        // Private Methods
-       // Private Methods
         // remove 4 of a colour of card from the hand
-        private void removeFourCards(CityGroup cardColour) {
+        public List<PlayerCard> removeFourCardsToCureDisease(CityGroup cardColour) {
             int removedCount = 0;
+            List<PlayerCard> returnList = new List<PlayerCard>();
             foreach(PlayerCard card in cardsInHand) {
                 if(card.group == cardColour) {
                     cardsInHand.Remove(card);
+                    returnList.Add(card);
                     removedCount++;
                     if(removedCount >= 4) {
-                        return;
+                        return returnList;
                     }
                 }
             }
+            return returnList;
         }
     }
 }

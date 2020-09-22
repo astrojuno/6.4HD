@@ -10,6 +10,7 @@ namespace Pandemic {
     public class Board {
         // Variables
         private Stack<PlayerCard> _playerCards = new Stack<PlayerCard>();
+        private List<PlayerCard> _discardedPlayerCards = new List<PlayerCard>();
         private Stack<InfectionCard> _infectionCards = new Stack<InfectionCard>();
         private List<InfectionCard> _flippedInfectionCards = new List<InfectionCard>();
         private string[] _blueCities = new string[] {"Atlanta", "Toronto", "Montreal", "Chicago", "Boston", "New York", "Washington", "Indianapolis"};
@@ -18,6 +19,8 @@ namespace Pandemic {
         private List<Disease> _diseases = new List<Disease>();
         private List<Player> _players;
         private List<City> _cities = new List<City>();
+        private int[] _infectionRate = new int[] {2, 2, 3, 4};
+        private int _infectionRateTracker = 0;
         public PlayerCard nextPlayerCard { get { return _playerCards.Pop(); } }
         public InfectionCard nextInfectionCard { get { return _infectionCards.Pop(); } }
         public List<Player> players { get { return _players; } }
@@ -25,6 +28,22 @@ namespace Pandemic {
         public bool outOfInfectionCards { get { return _infectionCards.Count <= 0; } }
         public List<City> cities { get { return _cities; } }
         public List<Disease> diseases { get { return _diseases; } }
+        public PlayerCard lastPlayerCardFlipped { get { 
+                                                        if(_discardedPlayerCards.Count == 0) {
+                                                            return null;
+                                                        }
+                                                        return _discardedPlayerCards.Last(); 
+                                                    } 
+                                                }
+        public InfectionCard lastInfectionCardFlipped { get { 
+                                                                if(_flippedInfectionCards.Count == 0) {
+                                                                    return null;
+                                                                }
+                                                                return _flippedInfectionCards.Last(); 
+                                                            } 
+                                                        }
+        public int currentInfectionRate { get { return _infectionRate[_infectionRateTracker]; } }
+
 
 
         // Constructor
@@ -79,6 +98,12 @@ namespace Pandemic {
             _flippedInfectionCards.Add(card);
         }
 
+        // puts a player card in the discarded pile
+        public void discardPlayerCard(PlayerCard card) {
+            _discardedPlayerCards.Add(card);
+            card.isFaceUp = true;
+        }
+
         // transfer a card from one player to another
         public void transferCard(Player from, Player to, PlayerCard card) {
             from.DiscardCard(card);
@@ -93,6 +118,14 @@ namespace Pandemic {
                 }
             }
             return null;
+        }
+
+        // increases the infection rate
+        public void increaseInfectionRate() {
+            _infectionRateTracker++;
+            if(_infectionRateTracker >= _infectionRate.Length) {
+                _infectionRateTracker = _infectionRate.Length - 1;
+            }
         }
 
 
