@@ -9,10 +9,10 @@ using SplashKitSDK;
 namespace Pandemic {
     public class Board {
         // Variables
-        private Stack<PlayerCard> _playerCards = new Stack<PlayerCard>();
-        private List<PlayerCard> _discardedPlayerCards = new List<PlayerCard>();
-        private Stack<InfectionCard> _infectionCards = new Stack<InfectionCard>();
-        private List<InfectionCard> _flippedInfectionCards = new List<InfectionCard>();
+        private Stack<Card> _playerCards = new Stack<Card>();
+        private List<Card> _discardedPlayerCards = new List<Card>();
+        private Stack<Card> _infectionCards = new Stack<Card>();
+        private List<Card> _flippedInfectionCards = new List<Card>();
         private string[] _blueCities = new string[] {"Atlanta", "Toronto", "Montreal", "Chicago", "Boston", "New York", "Washington", "Indianapolis"};
         private string[] _redCities = new string[] {"Los Angeles", "Phoenix", "Minneapolis", "San Francisco", "Seattle", "Calgary", "Denver", "Dallas"};
         private string[] _yellowCities = new string[] {"Monterrey", "Guadalajara", "Ciudad De Mexico", "New Orleans", "Tegucigalpa", "Havana", "Miami", "Santo Domingo"};
@@ -21,25 +21,27 @@ namespace Pandemic {
         private List<City> _cities = new List<City>();
         private int[] _infectionRate = new int[] {2, 2, 3, 4};
         private int _infectionRateTracker = 0;
-        public PlayerCard nextPlayerCard { get { return _playerCards.Pop(); } }
-        public InfectionCard nextInfectionCard { get { return _infectionCards.Pop(); } }
+        public PlayerCard nextPlayerCard { get { return (PlayerCard)_playerCards.Pop(); } }
+        public InfectionCard nextInfectionCard { get { return (InfectionCard)_infectionCards.Pop(); } }
         public List<Player> players { get { return _players; } }
         public bool outOfPlayerCards { get { return _playerCards.Count <= 0; } }
         public bool outOfInfectionCards { get { return _infectionCards.Count <= 0; } }
         public List<City> cities { get { return _cities; } }
         public List<Disease> diseases { get { return _diseases; } }
+        public List<Card> flippedInfectionCards { get { return _flippedInfectionCards; } }
+        public List<Card> discardedPlayerCards { get { return _discardedPlayerCards; } }
         public PlayerCard lastPlayerCardFlipped { get { 
                                                         if(_discardedPlayerCards.Count == 0) {
                                                             return null;
                                                         }
-                                                        return _discardedPlayerCards.Last(); 
+                                                        return (PlayerCard)_discardedPlayerCards.Last(); 
                                                     } 
                                                 }
         public InfectionCard lastInfectionCardFlipped { get { 
                                                                 if(_flippedInfectionCards.Count == 0) {
                                                                     return null;
                                                                 }
-                                                                return _flippedInfectionCards.Last(); 
+                                                                return (InfectionCard)_flippedInfectionCards.Last(); 
                                                             } 
                                                         }
         public int currentInfectionRate { get { return _infectionRate[_infectionRateTracker]; } }
@@ -139,7 +141,9 @@ namespace Pandemic {
         // create the player card stack
         private void createPlayerCards() {
             foreach(string city in _blueCities) {
-                _playerCards.Push(new PlayerCard(city, CityGroup.blue));
+                Card cardToPush = new PlayerCard(city, CityGroup.blue);
+                //_playerCards.Push(new PlayerCard(city, CityGroup.blue));
+                _playerCards.Push(cardToPush);
             }
             foreach(string city in _redCities) {
                 _playerCards.Push(new PlayerCard(city, CityGroup.red));
@@ -148,7 +152,7 @@ namespace Pandemic {
                 _playerCards.Push(new PlayerCard(city, CityGroup.yellow));
             }
             // shuffle the cards
-            PlayerCard[] cardList = _playerCards.ToArray();
+            Card[] cardList = _playerCards.ToArray();
             _playerCards.Clear();
             Random rnd = new Random();
             foreach (PlayerCard card in cardList.OrderBy(i => rnd.Next())) {
@@ -168,7 +172,7 @@ namespace Pandemic {
                 _infectionCards.Push(new InfectionCard(city, CityGroup.yellow));
             }
             // shuffle the cards
-            InfectionCard[] cardList = _infectionCards.ToArray();
+            Card[] cardList = _infectionCards.ToArray();
             _infectionCards.Clear();
             Random rnd = new Random();
             foreach (InfectionCard card in cardList.OrderBy(i => rnd.Next())) {

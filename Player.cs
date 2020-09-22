@@ -13,7 +13,7 @@ namespace Pandemic {
     }
     public abstract class Player {
         // Variables
-        private List<PlayerCard> _cardsInHand;
+        private List<Card> _cardsInHand;
         private City _location;
         private playerType _type;
         private double _xloc;
@@ -21,7 +21,7 @@ namespace Pandemic {
         protected Bitmap _pawn;
         protected int _turns = 4;
         public City location { get { return _location; } }
-        public List<PlayerCard> cardsInHand { get { return _cardsInHand; } }
+        public List<Card> cardsInHand { get { return _cardsInHand; } }
         public playerType type { get { return _type;} }
         public int turns { get { return _turns; } }
         public double xloc {
@@ -54,7 +54,7 @@ namespace Pandemic {
         // Constructor
         public Player(playerType type) {
             _type = type;
-            _cardsInHand = new List<PlayerCard>();
+            _cardsInHand = new List<Card>();
         }
 
         // Public Methods
