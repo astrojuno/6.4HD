@@ -6,7 +6,7 @@ using SplashKitSDK;
 namespace Pandemic {
     public class PlayerCard : Card {
         // Variables
-        public CityGroup group { get { return base._group; } }
+        
 
         // Constructor
         public PlayerCard(string city, CityGroup group) : base(city, group) {

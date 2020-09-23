@@ -16,6 +16,7 @@ namespace Pandemic {
         private double _yLoc;
         protected Bitmap _backOfCard;
         protected Bitmap _frontOfCard;
+        public CityGroup group { get { return _group; } }
         public double xLoc { 
             get { 
                 return _xLoc; 

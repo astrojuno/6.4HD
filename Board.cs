@@ -21,7 +21,7 @@ namespace Pandemic {
         private List<City> _cities = new List<City>();
         private int[] _infectionRate = new int[] {2, 2, 3, 4};
         private int _infectionRateTracker = 0;
-        public PlayerCard nextPlayerCard { get { return (PlayerCard)_playerCards.Pop(); } }
+        public Card nextPlayerCard {  get { Console.WriteLine("next: " + _playerCards.Peek().city); return _playerCards.Pop(); } }
         public InfectionCard nextInfectionCard { get { return (InfectionCard)_infectionCards.Pop(); } }
         public List<Player> players { get { return _players; } }
         public bool outOfPlayerCards { get { return _playerCards.Count <= 0; } }
@@ -130,6 +130,30 @@ namespace Pandemic {
             }
         }
 
+        // create the epidemic cards and shuffle them into the deck. 1 per third.
+        public void insertEpidemicCards() {
+            Random rnd = new Random();
+            List<Card> shuffleEpidemic = _playerCards.ToList();
+            _playerCards.Clear();
+            // create the three pandemic cards and randomly put them in each third
+            for(int i = 0; i < 3; i++) {
+                Card cardToPush = new EpidemicCard(i);
+                int lower = (shuffleEpidemic.Count / 3) * i;
+                int upper = (shuffleEpidemic.Count / 3) * (i + 1);
+                shuffleEpidemic.Insert(rnd.Next(lower, upper), cardToPush);
+            }
+            _playerCards = new Stack<Card>(shuffleEpidemic);
+        }
+
+        // returns the last infection card. Used in Epidemics
+        public Card lastInfectionCard() {
+            List<Card> tempCardList = _infectionCards.ToList();
+            _infectionCards.Clear();
+            Card cardToReturn = tempCardList.Last();
+            tempCardList.RemoveAt(tempCardList.Count - 1);
+            _infectionCards = new Stack<Card>(tempCardList);
+            return cardToReturn;
+        }
 
         // public void drawRects() {
         //     foreach(City city in _cities) {
@@ -146,10 +170,14 @@ namespace Pandemic {
                 _playerCards.Push(cardToPush);
             }
             foreach(string city in _redCities) {
-                _playerCards.Push(new PlayerCard(city, CityGroup.red));
+                Card cardToPush = new PlayerCard(city, CityGroup.red);
+                _playerCards.Push(cardToPush);
+                //_playerCards.Push(new PlayerCard(city, CityGroup.red));
             }
             foreach(string city in _yellowCities) {
-                _playerCards.Push(new PlayerCard(city, CityGroup.yellow));
+                Card cardToPush = new PlayerCard(city, CityGroup.yellow);
+                _playerCards.Push(cardToPush);
+                //_playerCards.Push(new PlayerCard(city, CityGroup.yellow));
             }
             // shuffle the cards
             Card[] cardList = _playerCards.ToArray();

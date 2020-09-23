@@ -12,7 +12,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SplashKitSDK;
 
 namespace Pandemic {
@@ -80,7 +79,7 @@ namespace Pandemic {
             InfectionCard infectionCardToFlip = board.nextInfectionCard;
             //InfectionCard flippedInfectionCard = null;
             // Player card pile
-            PlayerCard playerCardToFlip = board.nextPlayerCard;
+            PlayerCard playerCardToFlip = (PlayerCard)board.nextPlayerCard;
             //PlayerCard flippedPlayerCard = null;
 
             // Rects to keep track of important spaces on the board
@@ -117,9 +116,12 @@ namespace Pandemic {
             
             // deal two cards to each player
             foreach(Player player in board.players) {
-                player.AddCardToHand(board.nextPlayerCard);
-                player.AddCardToHand(board.nextPlayerCard);
+                player.AddCardToHand(board.nextPlayerCard as PlayerCard);
+                player.AddCardToHand(board.nextPlayerCard as PlayerCard);
             }
+
+            // this has to happen after the players have been dealt their cards
+            board.insertEpidemicCards();
             
             // for(int i = 0; i < 12; i++) {
             //     generalist.AddCardToHand(board.nextPlayerCard);
@@ -383,7 +385,7 @@ namespace Pandemic {
         }
 
         // draws the player card pile and returns the rect where the pile is
-        private Rectangle[] drawPlayerCards(PlayerCard playerCardToFlip, PlayerCard flippedPlayerCard) {
+        private Rectangle[] drawPlayerCards(Card playerCardToFlip, Card flippedPlayerCard) {
             Rectangle[] rectsToReturn = new Rectangle[2];
             gameWindow.DrawBitmap(playerCardToFlip.cardImage, PLAYER_CARD_X, PLAYER_CARD_Y);
             rectsToReturn[0] = SplashKit.RectangleFrom(PLAYER_CARD_X, PLAYER_CARD_Y, playerCardToFlip.cardImage.Width, playerCardToFlip.cardImage.Height);
@@ -807,8 +809,8 @@ namespace Pandemic {
             gameWindow.Refresh(60);
 
             int drawnCards = 0;
-            PlayerCard flippedCard = null;
-            PlayerCard cityCardToFlip = board.nextPlayerCard;
+            Card flippedCard = null;
+            Card cityCardToFlip = board.nextPlayerCard;
             
             Rectangle cityCardRect = drawPlayerCards(cityCardToFlip, flippedCard)[0];
             
@@ -820,7 +822,12 @@ namespace Pandemic {
                     if(SplashKit.PointInRectangle(mouseLoc, cityCardRect)) {
                         flippedCard = cityCardToFlip;
                         flippedCard.isFaceUp = true;
-                        currentPlayer.AddCardToHand(flippedCard);
+                        if(flippedCard.group == CityGroup.epidemic) {
+                            doEpidemic();
+                        } else {
+                            currentPlayer.AddCardToHand(flippedCard as PlayerCard);
+                        }
+                        
                         cityCardToFlip = board.nextPlayerCard;
                         drawPlayerCards(cityCardToFlip, board.lastPlayerCardFlipped);
                         displayCards(currentPlayer.cardsInHand);
@@ -845,6 +852,41 @@ namespace Pandemic {
                 index = 0;
             }
             return board.players[index];
+        }
+
+        // runs the epidemic 
+        private void doEpidemic() {
+            showMessage("Oh no, you got an Epidemic!");
+            showMessage("First we take the bottom card from the infection pile (click the pile to get it)");
+            
+            drawBoard();
+            
+            InfectionCard flippedInfectionCard = board.lastInfectionCardFlipped;
+            InfectionCard infectionCardToFlip = (InfectionCard)board.lastInfectionCard();
+            Rectangle infCardRect = drawInfectionCards(infectionCardToFlip, flippedInfectionCard)[0];
+            
+            if(playerClickedInRectangle(infCardRect)) {
+                flippedInfectionCard = infectionCardToFlip;
+                flippedInfectionCard.isFaceUp = true;
+                board.putInfectionCardIntoFlippedPile(flippedInfectionCard);
+
+                infectionCardToFlip = board.nextInfectionCard;
+                drawInfectionCards(infectionCardToFlip, flippedInfectionCard);
+                    
+                City cityToInfect = board.getCity(flippedInfectionCard.city);
+                Disease currentDisease = board.GetDisease(cityToInfect.type);
+                
+                // epidemic cities get 3 infection cubes
+                showMessage("The Epidemic city gets three infection cubes");
+
+                for(int i = 0; i < 3; i++) {
+                    cityToInfect.increaseInfection();
+                    currentDisease.useCube(1);
+                }
+
+                drawCityInfections();
+                gameWindow.Refresh(60);
+            }
         }
     }
 }

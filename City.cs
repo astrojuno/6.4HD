@@ -7,7 +7,7 @@ using SplashKitSDK;
 namespace Pandemic {
     // The groupings of the cities
     public enum CityGroup {
-        red, blue, yellow
+        red, blue, yellow, epidemic
     }
     public class City {
         // Variables
