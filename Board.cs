@@ -155,6 +155,15 @@ namespace Pandemic {
             return cardToReturn;
         }
 
+        // shuffle and restack the drawn infection cards
+        public void shuffleAndRestackDrawnInfectionCards() {
+            Random rnd = new Random();
+            foreach (Card card in _flippedInfectionCards.OrderBy(i => rnd.Next())) {
+                _playerCards.Push(card);
+            }
+            _flippedInfectionCards.Clear();
+        }
+
         // public void drawRects() {
         //     foreach(City city in _cities) {
         //         SplashKit.DrawRectangle(Color.BrightGreen, city.boardLocation);
@@ -486,7 +495,7 @@ namespace Pandemic {
                         break;
                     case "Ciudad De Mexico":
                         foreach(City cityToAssess in _cities) {
-                            if((cityToAssess.name == "Guadalajara" || cityToAssess.name == "Monterrey" || cityToAssess.name == "Tegucigalpa")) {
+                            if((cityToAssess.name == "Guadalajara" || cityToAssess.name == "Monterrey" || cityToAssess.name == "Tegucigalpa" || cityToAssess.name == "Havana")) {
                                 city.addConnectedCity(cityToAssess);
                             }
                         }
