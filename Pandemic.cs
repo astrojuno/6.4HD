@@ -373,6 +373,7 @@ namespace Pandemic {
             SplashKit.LoadBitmap("boardImage", "Board.png");
             SplashKit.LoadBitmap("medic", "medicPawn.png");
             SplashKit.LoadBitmap("generalist", "generalistPawn.png");
+            SplashKit.LoadBitmap("researcher", "researcherPawn.png");
         }
 
         // draws the infection card pile and returns the rect where the pile is

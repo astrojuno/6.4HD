@@ -1,7 +1,6 @@
 // Generalist player type for the game Pandemic 
 // John Ryder 219466419
 
-using System;
 using SplashKitSDK;
 
 namespace Pandemic {
