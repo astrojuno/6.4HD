@@ -12,10 +12,8 @@ namespace Pandemic {
 
         // Public Methods
         // The medics special power is to remove all infections when treating infection
-        public override void TreatInfection() {
-            for(int i = 0; i < 3; i++) {
-                base.location.decreaseInfection();
-            }
+        public override void TreatInfection(bool diseaseIsCured) {
+            base.location.decreaseInfection(3);
         }
     }
 }

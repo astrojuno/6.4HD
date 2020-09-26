@@ -64,8 +64,8 @@ namespace Pandemic {
             }    
         }
 
-        public void decreaseInfection() {
-            _infectionLevel -= 1;
+        public void decreaseInfection(int numberToDecreaseBy) {
+            _infectionLevel -= numberToDecreaseBy;
             if(_infectionLevel < 0) {
                 _infectionLevel = 0;
             }

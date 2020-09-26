@@ -13,7 +13,7 @@ namespace Pandemic {
 
         public override void loadCardImages() {
             SplashKit.LoadBitmap("Epidemic"+_cardNumber, "EpidemicCardFront.png");
-            _frontOfCard = SplashKit.BitmapNamed("EpidemicFront"+_cardNumber);
+            _frontOfCard = SplashKit.BitmapNamed("Epidemic"+_cardNumber);
             Rectangle rect = _frontOfCard.BoundingRectangle();
             int textWidth = Text.Width(city, "roboto", FONT_SIZE);
             int textHeight = Text.Height(city, "roboto", FONT_SIZE);

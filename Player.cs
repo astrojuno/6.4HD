@@ -58,8 +58,13 @@ namespace Pandemic {
         }
 
         // Public Methods
-        public virtual void TreatInfection() {
-            location.decreaseInfection();
+        public virtual void TreatInfection(bool diseaseIsCured) {
+            if(diseaseIsCured) {
+                location.decreaseInfection(3);
+            } else {
+                location.decreaseInfection(1);
+            }
+            
         }
         
          // you need 4 of a colour cards, and to be in a city with a base

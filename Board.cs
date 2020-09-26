@@ -30,11 +30,11 @@ namespace Pandemic {
         public List<Disease> diseases { get { return _diseases; } }
         public List<Card> flippedInfectionCards { get { return _flippedInfectionCards; } }
         public List<Card> discardedPlayerCards { get { return _discardedPlayerCards; } }
-        public PlayerCard lastPlayerCardFlipped { get { 
+        public Card lastPlayerCardFlipped { get { 
                                                         if(_discardedPlayerCards.Count == 0) {
                                                             return null;
-                                                        }
-                                                        return (PlayerCard)_discardedPlayerCards.Last(); 
+                                                        } else
+                                                        return _discardedPlayerCards.Last(); 
                                                     } 
                                                 }
         public InfectionCard lastInfectionCardFlipped { get { 
@@ -101,7 +101,7 @@ namespace Pandemic {
         }
 
         // puts a player card in the discarded pile
-        public void discardPlayerCard(PlayerCard card) {
+        public void discardPlayerCard(Card card) {
             _discardedPlayerCards.Add(card);
             card.isFaceUp = true;
         }
