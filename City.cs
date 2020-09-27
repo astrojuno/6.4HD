@@ -61,7 +61,7 @@ namespace Pandemic {
                     outbreak();
                     _infectionLevel = 3;
                 }
-            }    
+            }
         }
 
         public void decreaseInfection(int numberToDecreaseBy) {
@@ -84,7 +84,7 @@ namespace Pandemic {
         private void outbreak() {
             _canBeOutbroken = false;
             foreach(City city in _connectedCities) {
-                increaseInfection();
+                city.increaseInfection();
             }
             _canBeOutbroken = true;
         }

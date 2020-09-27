@@ -114,9 +114,6 @@ namespace Pandemic {
 
         public void AddCardToHand(PlayerCard card) {
             _cardsInHand.Add(card);
-            // while(_cardsInHand.Count > 7) {
-            //     DiscardCard();
-            // }
         }
 
         public void DiscardCard(PlayerCard card) {

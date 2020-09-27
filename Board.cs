@@ -10,9 +10,9 @@ namespace Pandemic {
     public class Board {
         // Variables
         private Stack<Card> _playerCards = new Stack<Card>();
-        private List<Card> _discardedPlayerCards = new List<Card>();
+        private Stack<Card> _discardedPlayerCards = new Stack<Card>();
         private Stack<Card> _infectionCards = new Stack<Card>();
-        private List<Card> _flippedInfectionCards = new List<Card>();
+        private Stack<Card> _flippedInfectionCards = new Stack<Card>();
         private string[] _blueCities = new string[] {"Atlanta", "Toronto", "Montreal", "Chicago", "Boston", "New York", "Washington", "Indianapolis"};
         private string[] _redCities = new string[] {"Los Angeles", "Phoenix", "Minneapolis", "San Francisco", "Seattle", "Calgary", "Denver", "Dallas"};
         private string[] _yellowCities = new string[] {"Monterrey", "Guadalajara", "Ciudad De Mexico", "New Orleans", "Tegucigalpa", "Havana", "Miami", "Santo Domingo"};
@@ -21,30 +21,33 @@ namespace Pandemic {
         private List<City> _cities = new List<City>();
         private int[] _infectionRate = new int[] {2, 2, 3, 4};
         private int _infectionRateTracker = 0;
-        public Card nextPlayerCard {  get { Console.WriteLine("next: " + _playerCards.Peek().city); return _playerCards.Pop(); } }
+        private int _outbreakTracker = 0;
+        public Card nextPlayerCard {  get { return _playerCards.Pop(); } }
         public InfectionCard nextInfectionCard { get { return (InfectionCard)_infectionCards.Pop(); } }
         public List<Player> players { get { return _players; } }
         public bool outOfPlayerCards { get { return _playerCards.Count <= 0; } }
         public bool outOfInfectionCards { get { return _infectionCards.Count <= 0; } }
         public List<City> cities { get { return _cities; } }
         public List<Disease> diseases { get { return _diseases; } }
-        public List<Card> flippedInfectionCards { get { return _flippedInfectionCards; } }
-        public List<Card> discardedPlayerCards { get { return _discardedPlayerCards; } }
+        public List<Card> flippedInfectionCards { get { return _flippedInfectionCards.ToList(); } }
+        public List<Card> discardedPlayerCards { get { return _discardedPlayerCards.ToList(); } }
+        public int outbreakTracker { get { return _outbreakTracker; } }
         public Card lastPlayerCardFlipped { get { 
                                                         if(_discardedPlayerCards.Count == 0) {
                                                             return null;
                                                         } else
-                                                        return _discardedPlayerCards.Last(); 
+                                                        return _discardedPlayerCards.Peek(); 
                                                     } 
                                                 }
         public InfectionCard lastInfectionCardFlipped { get { 
                                                                 if(_flippedInfectionCards.Count == 0) {
                                                                     return null;
                                                                 }
-                                                                return (InfectionCard)_flippedInfectionCards.Last(); 
+                                                                return (InfectionCard)_flippedInfectionCards.Peek(); 
                                                             } 
                                                         }
         public int currentInfectionRate { get { return _infectionRate[_infectionRateTracker]; } }
+        public int infectionRateMarkerPosition { get { return _infectionRateTracker + 1; } }
 
 
 
@@ -97,12 +100,12 @@ namespace Pandemic {
 
         // put a card into the flipped infection card pile
         public void putInfectionCardIntoFlippedPile(InfectionCard card) {
-            _flippedInfectionCards.Add(card);
+            _flippedInfectionCards.Push(card);
         }
 
         // puts a player card in the discarded pile
         public void discardPlayerCard(Card card) {
-            _discardedPlayerCards.Add(card);
+            _discardedPlayerCards.Push(card);
             card.isFaceUp = true;
         }
 
@@ -159,7 +162,8 @@ namespace Pandemic {
         public void shuffleAndRestackDrawnInfectionCards() {
             Random rnd = new Random();
             foreach (Card card in _flippedInfectionCards.OrderBy(i => rnd.Next())) {
-                _playerCards.Push(card);
+                card.isFaceUp = false;
+                _infectionCards.Push(card);
             }
             _flippedInfectionCards.Clear();
         }
