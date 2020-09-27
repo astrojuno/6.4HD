@@ -3,14 +3,16 @@
 
 using System.Collections.Generic;
 using SplashKitSDK;
+using System;
 
 namespace Pandemic {
     // The groupings of the cities
     public enum CityGroup {
         red, blue, yellow, epidemic
     }
-    public class City {
+    public class City : IObservable<City> {
         // Variables
+        private List<IObserver<City>> _observers;
         private string _name;
         private int _infectionLevel;
         private bool _canBeOutbroken;
@@ -50,6 +52,7 @@ namespace Pandemic {
             _infectionLevel = 0;
             _connectedCities = new List<City>();
             _hasBase = false;
+            _observers = new List<IObserver<City>>();
         }
 
         // Public Methods
@@ -80,9 +83,20 @@ namespace Pandemic {
             _cityCentre = cityCentre;
         }
 
+        // Subscriber Methods
+        public IDisposable Subscribe(IObserver<City> observer) {
+            if (!_observers.Contains(observer)) {
+                _observers.Add(observer);
+            }
+            return new Unsubscriber<City>(_observers, observer);
+        }
+        
         // Private Methods
         private void outbreak() {
             _canBeOutbroken = false;
+            foreach(IObserver<City> observer in _observers) {
+                observer.OnNext(this);
+            }
             foreach(City city in _connectedCities) {
                 city.increaseInfection();
             }

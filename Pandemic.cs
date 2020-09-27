@@ -6,7 +6,7 @@
 // DONE - escape for any waiting for key to be pressed to take back to main menu
 // DONE - epidemic cards: need to shuffle drawn inf cards once one is drawn...
 // DONE - more players - researcher done
-// - elegant win or lose
+// DONE - elegant win or lose
 // DONE - consolodate board drawing
 // DONE - deal with more than 7 cards in hand
 
@@ -34,7 +34,8 @@ namespace Pandemic {
         // if you change this then you'll need to change ALL the city locations on the board also!
         private const double SCALAR = 0.25F;
         private const int WINDOW_HEIGHT = 873; 
-        private const int WINDOW_WIDTH = 1316;
+        private const int WINDOW_CARD_BUFFER = 250;
+        private const int WINDOW_WIDTH = 1316 + WINDOW_CARD_BUFFER;
         private const int INFECTION_X = 23;
         private const int INFECTION_Y = 23;
         private const int FLIPPED_INFECTION_X = 23;
@@ -51,6 +52,12 @@ namespace Pandemic {
         private const double INFECTION_MARKER_X = 165;
         private const double INFECTION_MARKER_Y = 20;
         private const double INFECTION_MARKER_OFFSET = 65; 
+        private const double OUTBREAK_MARKER_X = 1227;
+        private const double OUTBREAK_MARKER_Y = 25;
+        private const double OUTBREAK_MARKER_OFFSET = 75;
+        private const double RED_CUBE_COUNTER_OFFSET = 195;
+        private const double CUBE_COUNTER_OFFSET = 65;
+
         public void playPandemic() {
             loadResources();
             
@@ -60,8 +67,8 @@ namespace Pandemic {
 
             // // for some unknown reason, splashkit draws a scaled bitmap anchored from the centre. so the 0, 0 point
             // // needs to be offset when scaling. frustrating.
-            double xOffset = (WINDOW_WIDTH - SplashKit.BitmapNamed("boardImage").Width) / 2;
-            double yOffset = (WINDOW_HEIGHT - SplashKit.BitmapNamed("boardImage").Height) / 2;
+            //double xOffset = ((WINDOW_WIDTH - SplashKit.BitmapNamed("boardImage").Width) / 2) - WINDOW_CARD_BUFFER;
+            //double yOffset = (WINDOW_HEIGHT - SplashKit.BitmapNamed("boardImage").Height) / 2;
             
             drawBoard();
 
@@ -151,13 +158,25 @@ namespace Pandemic {
                         outOfCubes = true;
                     }
                 }
-                if(board.outOfInfectionCards || board.outOfPlayerCards || outOfCubes) {
-                    while(true) {
-                        string message = "out of inf: " + board.outOfInfectionCards.ToString() + " out of plc: " + board.outOfPlayerCards.ToString() + " out of cubes: " + outOfCubes.ToString();
-                        showMessage(message);
-                        gameWindow.Refresh(60);
-                        Thread.Sleep(5000);
+                if(board.outOfInfectionCards || board.outOfPlayerCards || outOfCubes || board.outbreakTracker >= 4) {
+                    showMessage("Oh no, you lost!");
+                    string message = "You ran out of ";
+                    if(board.outOfInfectionCards) {
+                        message += "infection cards; ";
                     }
+                    if(board.outOfPlayerCards) {
+                        message += "player cards; ";
+                    }
+                    if(outOfCubes) {
+                        message += "cubes; ";
+                    }
+                    if(board.outbreakTracker >= 4) {
+                        message += "outbreaks; ";
+                    }
+
+                    showMessage(message);
+                    
+                    SplashKit.QuitRequested();
                 }
 
                 // click on the discarded cards to show that pile
@@ -402,6 +421,11 @@ namespace Pandemic {
             SplashKit.LoadBitmap("researcher", "researcherPawn.png");
             SplashKit.LoadBitmap("dispatcher", "dispatcherPawn.png");
             SplashKit.LoadBitmap("infectionMarker", "infectionMarker.png");
+            SplashKit.LoadBitmap("outbreakMarker", "outbreakMarker.png");
+            SplashKit.LoadBitmap("generalistHUD", "generalistHUD.png");
+            SplashKit.LoadBitmap("researcherHUD", "researcherHUD.png");
+            SplashKit.LoadBitmap("medicHUD", "medicHUD.png");
+            SplashKit.LoadBitmap("dispatcherHUD", "dispatcherHUD.png");
         }
 
         // draws the infection card pile and returns the rect where the pile is
@@ -549,22 +573,40 @@ namespace Pandemic {
         }
         // draws the HUD that coaches players
         private void drawHUD(Player player) {
-            Rectangle hudRect = SplashKit.RectangleFrom(1096, 418, 317, 145);
-            SplashKit.FillRectangle(Color.Black, hudRect);
-            SplashKit.DrawText(player.typeToString + " you can do one of the following:", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+5);
-            SplashKit.DrawText("1: Drive/Ferry (Move to a connected city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+15);
-            SplashKit.DrawText("2: Direct Flight (Discard a City card to move", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+25);
-            SplashKit.DrawText("directly to that city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+35);
-            SplashKit.DrawText("3: Charter Flight (Discard the City card", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+45);
-            SplashKit.DrawText("matching your city to move directly to any city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+55);
-            SplashKit.DrawText("4: Treat Disease (Remove 1 disease cube", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+65);
-            SplashKit.DrawText("from your city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+75);
-            SplashKit.DrawText("5: Share Knowledge (Give or take the City card", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+85);
-            SplashKit.DrawText("mathcing your city from a player in your city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+95);
-            SplashKit.DrawText("6: Discover a Cure (In Atlanta, discard 4 City", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+105);
-            SplashKit.DrawText("cards of the same colour to cure that disease)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+115);
-            SplashKit.DrawText("7: Show your cards in hand", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+125);
-            SplashKit.DrawBitmap(player.pawn, hudRect.X-20, hudRect.Y);
+            // Rectangle hudRect = SplashKit.RectangleFrom(1096, 418, 317, 145);
+            // SplashKit.FillRectangle(Color.Black, hudRect);
+            // SplashKit.DrawText(player.typeToString + " you can do one of the following:", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+5);
+            // SplashKit.DrawText("1: Drive/Ferry (Move to a connected city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+15);
+            // SplashKit.DrawText("2: Direct Flight (Discard a City card to move", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+25);
+            // SplashKit.DrawText("directly to that city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+35);
+            // SplashKit.DrawText("3: Charter Flight (Discard the City card", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+45);
+            // SplashKit.DrawText("matching your city to move directly to any city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+55);
+            // SplashKit.DrawText("4: Treat Disease (Remove 1 disease cube", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+65);
+            // SplashKit.DrawText("from your city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+75);
+            // SplashKit.DrawText("5: Share Knowledge (Give or take the City card", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+85);
+            // SplashKit.DrawText("mathcing your city from a player in your city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+95);
+            // SplashKit.DrawText("6: Discover a Cure (In Atlanta, discard 4 City", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+105);
+            // SplashKit.DrawText("cards of the same colour to cure that disease)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+115);
+            // SplashKit.DrawText("7: Show your cards in hand", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+125);
+            // SplashKit.DrawBitmap(player.pawn, hudRect.X-20, hudRect.Y);
+
+            string bitmapName = "";
+            switch(player.type) {
+                case playerType.Dispatcher:
+                    bitmapName = "dispatcherHUD";
+                    break;
+                case playerType.Generalist:
+                    bitmapName = "generalistHUD";
+                    break;
+                case playerType.Medic:
+                    bitmapName = "medicHUD";
+                    break;
+                case playerType.Researcher:
+                    bitmapName = "researcherHUD";
+                    break;    
+            }
+            SplashKit.DrawBitmap(SplashKit.BitmapNamed(bitmapName), WINDOW_WIDTH - WINDOW_CARD_BUFFER, 0);
+            
         }
 
         // Get and return a city based on user mouse click
@@ -698,7 +740,7 @@ namespace Pandemic {
         // draws the board image
         private void drawBoard() {
             // here for drawing the board...
-            double xOffset = (WINDOW_WIDTH - SplashKit.BitmapNamed("boardImage").Width) / 2;
+            double xOffset = (WINDOW_WIDTH - SplashKit.BitmapNamed("boardImage").Width - WINDOW_CARD_BUFFER) / 2;
             double yOffset = (WINDOW_HEIGHT - SplashKit.BitmapNamed("boardImage").Height) / 2;
             
             gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(SCALAR, SCALAR));
@@ -761,10 +803,10 @@ namespace Pandemic {
 
         // allocates the drawing of the disease info
         private void drawDiseaseLevels(List<Disease> diseases) {
-            double redRectX = WINDOW_WIDTH - 195;
-            double rectY = WINDOW_HEIGHT - 65;
-            double yellowRectX = redRectX + 65;
-            double blueRectX = yellowRectX + 65;
+            double redRectX = WINDOW_WIDTH - RED_CUBE_COUNTER_OFFSET - WINDOW_CARD_BUFFER;
+            double rectY = WINDOW_HEIGHT - CUBE_COUNTER_OFFSET;
+            double yellowRectX = redRectX + CUBE_COUNTER_OFFSET;
+            double blueRectX = yellowRectX + CUBE_COUNTER_OFFSET;
             
         
             foreach(Disease disease in diseases) {
@@ -923,6 +965,7 @@ namespace Pandemic {
 
         // draws the game
         private void drawGame(InfectionCard infectionCardToFlip, Card playerCardToFlip, Player currentPlayer) {
+            gameWindow.Clear(Color.White);
             // draw all the board items
             drawBoard();
             if(infectionCardToFlip != null) {
@@ -938,11 +981,11 @@ namespace Pandemic {
                 drawHUD(currentPlayer);
             }
 
+            drawMarkers();
             drawPlayers(board.players);
             drawCityInfections();
             drawDiseaseLevels(board.diseases);
-            drawInfectionMarker();
-
+            
             gameWindow.Refresh(50);
         }
 
@@ -970,10 +1013,15 @@ namespace Pandemic {
             }
         }
 
-        // draws the infection marker
-        private void drawInfectionMarker() {
+        // draws the markers
+        private void drawMarkers() {
+            // infection marker
             double infectionMarkerX = INFECTION_MARKER_X + (board.infectionRateMarkerPosition * INFECTION_MARKER_OFFSET);
             gameWindow.DrawBitmap(SplashKit.BitmapNamed("infectionMarker"), infectionMarkerX, INFECTION_MARKER_Y);
+
+            // outbreak marker
+            double outbreakMarkerX = OUTBREAK_MARKER_X + (board.outbreakTracker * OUTBREAK_MARKER_OFFSET);
+            gameWindow.DrawBitmap(SplashKit.BitmapNamed("outbreakMarker"), outbreakMarkerX, OUTBREAK_MARKER_Y);
         }
     }
 }

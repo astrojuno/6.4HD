@@ -7,8 +7,9 @@ using System.Linq;
 using SplashKitSDK;
 
 namespace Pandemic {
-    public class Board {
+    public class Board : IObserver<City> {
         // Variables
+        private IDisposable cancellation;
         private Stack<Card> _playerCards = new Stack<Card>();
         private Stack<Card> _discardedPlayerCards = new Stack<Card>();
         private Stack<Card> _infectionCards = new Stack<Card>();
@@ -174,6 +175,29 @@ namespace Pandemic {
         //     }
         // }
 
+        // Subscriber Methods
+        public virtual void Subscribe(City provider) {
+            cancellation = provider.Subscribe(this);
+        }
+
+        public virtual void Unsubscribe() {
+            cancellation.Dispose();
+        }
+
+        // needed but not implimented
+        public virtual void OnCompleted() {
+            
+        }
+        // This is needed to conform, but we don't throw any errors so no implimentation is
+        // actually needed
+        public virtual void OnError(Exception e) {
+
+        }
+
+        public virtual void OnNext(City outbreak) {
+            _outbreakTracker++;
+        }
+
         // Private Methods
         // create the player card stack
         private void createPlayerCards() {
@@ -231,13 +255,19 @@ namespace Pandemic {
         // load the cities 
         private void loadCities() {
             foreach(string city in _blueCities) {
-                _cities.Add(new City(city, CityGroup.blue));
+                City cityToAdd = new City(city, CityGroup.blue);
+                _cities.Add(cityToAdd);
+                this.Subscribe(cityToAdd);
             }
             foreach(string city in _redCities) {
-                _cities.Add(new City(city, CityGroup.red));
+                City cityToAdd = new City(city, CityGroup.red);
+                _cities.Add(cityToAdd);
+                this.Subscribe(cityToAdd);
             }
             foreach(string city in _yellowCities) {
-                _cities.Add(new City(city, CityGroup.yellow));
+                City cityToAdd = new City(city, CityGroup.yellow);
+                _cities.Add(cityToAdd);
+                this.Subscribe(cityToAdd);
             }
 
             // only way I could figure this out was to brute force it...
