@@ -34,9 +34,9 @@ namespace Pandemic {
         public List<Card> discardedPlayerCards { get { return _discardedPlayerCards.ToList(); } }
         public int outbreakTracker { get { return _outbreakTracker; } }
         public Card lastPlayerCardFlipped { get { 
-                                                        if(_discardedPlayerCards.Count == 0) {
-                                                            return null;
-                                                        } else
+                                                    if(_discardedPlayerCards.Count == 0) {
+                                                        return null;
+                                                    } else
                                                         return _discardedPlayerCards.Peek(); 
                                                     } 
                                                 }
@@ -49,6 +49,17 @@ namespace Pandemic {
                                                         }
         public int currentInfectionRate { get { return _infectionRate[_infectionRateTracker]; } }
         public int infectionRateMarkerPosition { get { return _infectionRateTracker + 1; } }
+        public bool wonGame { get { 
+                                    int cured = 0;
+                                    foreach(Disease disease in _diseases) {
+                                        if(disease.isCured) {
+                                            cured++;
+                                        }
+                                    }
+                                    // 1 taken away for the epidemic group
+                                    return cured >= Enum.GetNames(typeof(CityGroup)).Length - 1;
+                                }
+                            }
 
 
 
@@ -169,12 +180,6 @@ namespace Pandemic {
             _flippedInfectionCards.Clear();
         }
 
-        // public void drawRects() {
-        //     foreach(City city in _cities) {
-        //         SplashKit.DrawRectangle(Color.BrightGreen, city.boardLocation);
-        //     }
-        // }
-
         // Subscriber Methods
         public virtual void Subscribe(City provider) {
             cancellation = provider.Subscribe(this);
@@ -188,7 +193,7 @@ namespace Pandemic {
         public virtual void OnCompleted() {
             
         }
-        // This is needed to conform, but we don't throw any errors so no implimentation is
+        // These are needed to conform, but we don't need them so no implimentation is
         // actually needed
         public virtual void OnError(Exception e) {
 
@@ -203,18 +208,15 @@ namespace Pandemic {
         private void createPlayerCards() {
             foreach(string city in _blueCities) {
                 Card cardToPush = new PlayerCard(city, CityGroup.blue);
-                //_playerCards.Push(new PlayerCard(city, CityGroup.blue));
                 _playerCards.Push(cardToPush);
             }
             foreach(string city in _redCities) {
                 Card cardToPush = new PlayerCard(city, CityGroup.red);
                 _playerCards.Push(cardToPush);
-                //_playerCards.Push(new PlayerCard(city, CityGroup.red));
             }
             foreach(string city in _yellowCities) {
                 Card cardToPush = new PlayerCard(city, CityGroup.yellow);
                 _playerCards.Push(cardToPush);
-                //_playerCards.Push(new PlayerCard(city, CityGroup.yellow));
             }
             // shuffle the cards
             Card[] cardList = _playerCards.ToArray();
@@ -248,7 +250,9 @@ namespace Pandemic {
         // create the diseases for the game
         private void createDiseases() {
             foreach(CityGroup diseaseColour in Enum.GetValues(typeof(CityGroup))) {
-                _diseases.Add(new Disease(diseaseColour));
+                if(diseaseColour != CityGroup.epidemic) {
+                    _diseases.Add(new Disease(diseaseColour));
+                }
             }
         }
 

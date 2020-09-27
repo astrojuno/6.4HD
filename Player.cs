@@ -2,7 +2,6 @@
 // Image for player pawn used with free personal licence from https://www.pinclipart.com/pindetail/iomwR_monopoly-board-game-clipart-cliparthut-free-clipart-board/
 // John Ryder 219466419
 
-using System;
 using System.Collections.Generic;
 using SplashKitSDK;
 
@@ -68,7 +67,7 @@ namespace Pandemic {
         }
         
          // you need 4 of a colour cards, and to be in a city with a base
-        public virtual List<CityGroup> CanDiscoverCure() {
+        public List<CityGroup> CanDiscoverCure() {
             List<CityGroup> curableOptions = new List<CityGroup>();
             if(location.hasBase) {
                 // see if you have 4 of a colour of card
@@ -91,22 +90,17 @@ namespace Pandemic {
                 
                 if(blue >= 4) {
                     curableOptions.Add(CityGroup.blue);
-                    //removeFourCards(CityGroup.blue);
-                    //board.cure(CityGroup.blue);
                 } 
                 if(red >= 4) {
                     curableOptions.Add(CityGroup.red);
-                    //removeFourCards(CityGroup.red);
                 }
                 if(yellow >= 4) {
                     curableOptions.Add(CityGroup.yellow);
-                    //removeFourCards(CityGroup.yellow);
                 }
 
             } 
             return curableOptions;
         }
-        //public abstract void Build();
         
         public void Move(City toCity) {
             _location = toCity;

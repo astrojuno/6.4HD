@@ -10,10 +10,5 @@ namespace Pandemic {
             base._pawn = SplashKit.BitmapNamed("generalist");
             base._turns = 5;
         }
-
-        // Public Methods
-        
-
-
     }
 }

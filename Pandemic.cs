@@ -1,20 +1,9 @@
 // Simple version of the Pandemic game
 // John Ryder 219466419
 
-// TODO:- 
-// DONE - click on flipped card pile to show cards in that pile
-// DONE - escape for any waiting for key to be pressed to take back to main menu
-// DONE - epidemic cards: need to shuffle drawn inf cards once one is drawn...
-// DONE - more players - researcher done
-// DONE - elegant win or lose
-// DONE - consolodate board drawing
-// DONE - deal with more than 7 cards in hand
-
-
 using System;
 using System.Collections.Generic;
 using SplashKitSDK;
-using System.Threading;
 
 namespace Pandemic {
     
@@ -65,11 +54,6 @@ namespace Pandemic {
             
             board = new Board();
 
-            // // for some unknown reason, splashkit draws a scaled bitmap anchored from the centre. so the 0, 0 point
-            // // needs to be offset when scaling. frustrating.
-            //double xOffset = ((WINDOW_WIDTH - SplashKit.BitmapNamed("boardImage").Width) / 2) - WINDOW_CARD_BUFFER;
-            //double yOffset = (WINDOW_HEIGHT - SplashKit.BitmapNamed("boardImage").Height) / 2;
-            
             drawBoard();
 
             // create the players
@@ -178,8 +162,12 @@ namespace Pandemic {
                     
                     SplashKit.QuitRequested();
                 }
+                if(board.wonGame) {
+                    showMessage("YAY, you won!");
+                    SplashKit.QuitRequested();
+                }
 
-                // click on the discarded cards to show that pile
+                // click on the flipped cards to show that pile
                 if(SplashKit.MouseClicked(MouseButton.LeftButton)) {
                     // check for the infection card pile
                     Point2D mouseLoc = SplashKit.MousePosition();
@@ -573,23 +561,6 @@ namespace Pandemic {
         }
         // draws the HUD that coaches players
         private void drawHUD(Player player) {
-            // Rectangle hudRect = SplashKit.RectangleFrom(1096, 418, 317, 145);
-            // SplashKit.FillRectangle(Color.Black, hudRect);
-            // SplashKit.DrawText(player.typeToString + " you can do one of the following:", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+5);
-            // SplashKit.DrawText("1: Drive/Ferry (Move to a connected city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+15);
-            // SplashKit.DrawText("2: Direct Flight (Discard a City card to move", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+25);
-            // SplashKit.DrawText("directly to that city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+35);
-            // SplashKit.DrawText("3: Charter Flight (Discard the City card", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+45);
-            // SplashKit.DrawText("matching your city to move directly to any city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+55);
-            // SplashKit.DrawText("4: Treat Disease (Remove 1 disease cube", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+65);
-            // SplashKit.DrawText("from your city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+75);
-            // SplashKit.DrawText("5: Share Knowledge (Give or take the City card", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+85);
-            // SplashKit.DrawText("mathcing your city from a player in your city)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+95);
-            // SplashKit.DrawText("6: Discover a Cure (In Atlanta, discard 4 City", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+105);
-            // SplashKit.DrawText("cards of the same colour to cure that disease)", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+115);
-            // SplashKit.DrawText("7: Show your cards in hand", Color.White, "roboto", 10, hudRect.X+5, hudRect.Y+125);
-            // SplashKit.DrawBitmap(player.pawn, hudRect.X-20, hudRect.Y);
-
             string bitmapName = "";
             switch(player.type) {
                 case playerType.Dispatcher:
