@@ -31,23 +31,23 @@ namespace Pandemic {
             get { return _yloc; }
             set { _yloc = value; }
         }
-        public string typeToString { 
-            get {
-                switch(_type) {
-                    case playerType.Researcher:
-                        return "Researcher";
-                    case playerType.Dispatcher:
-                        return "Dispatcher";
-                    case playerType.Generalist:
-                        return "Generalist";
-                    case playerType.Medic:
-                        return "Medic";
-                    // default needed to silence compiler warnings
-                    default:
-                        return "Player";
-                }
-            }
-        }
+        // public string typeToString { 
+        //     get {
+        //         switch(_type) {
+        //             case playerType.Researcher:
+        //                 return "Researcher";
+        //             case playerType.Dispatcher:
+        //                 return "Dispatcher";
+        //             case playerType.Generalist:
+        //                 return "Generalist";
+        //             case playerType.Medic:
+        //                 return "Medic";
+        //             // default needed to silence compiler warnings
+        //             default:
+        //                 return "Player";
+        //         }
+        //     }
+        // }
         public Bitmap pawn { get { return _pawn; } }
 
         // Constructor

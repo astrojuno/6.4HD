@@ -4,7 +4,7 @@
 using SplashKitSDK;
 
 namespace Pandemic {
-    class EpidemicCard : Card {
+    class EpidemicCard : PlayerCard {
         private int _cardNumber;
         public EpidemicCard(int epidemicCardNumber) : base("EPIDEMIC!", CityGroup.epidemic) {
             _cardNumber = epidemicCardNumber;
