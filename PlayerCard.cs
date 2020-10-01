@@ -5,9 +5,6 @@ using SplashKitSDK;
 
 namespace Pandemic {
     public class PlayerCard : Card {
-        // Variables
-        
-
         // Constructor
         public PlayerCard(string city, CityGroup group) : base(city, group) {
             loadCardImages();

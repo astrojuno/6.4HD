@@ -28,6 +28,7 @@ namespace Pandemic {
             }
         }
 
+        // a quick check to see if you have lost due to running out of cubes
         public bool hasLostGame() {
             return _cubes <= 0;
         }

@@ -1,12 +1,16 @@
 // Board for the game Pandemic
 // John Ryder 219466419
 
+// This class is responsible for running most of the game. It responds to requests from Pandemic.cs, 
+// and directs changes here and in other classes. 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using SplashKitSDK;
 
 namespace Pandemic {
+    // This subscribes to City to be alerted of outbreaks
     public class Board : IObserver<City> {
         // Variables
         private IDisposable cancellation;
@@ -23,6 +27,7 @@ namespace Pandemic {
         private int[] _infectionRate = new int[] {2, 2, 3, 4};
         private int _infectionRateTracker = 0;
         private int _outbreakTracker = 0;
+        private Func<string, string, bool> compareString = (s, c) => s.ToLower() == c.ToLower();
         public Card nextPlayerCard {  get { return _playerCards.Pop(); } }
         public InfectionCard nextInfectionCard { get { return (InfectionCard)_infectionCards.Pop(); } }
         public List<Player> players { get { return _players; } }
@@ -76,8 +81,10 @@ namespace Pandemic {
         // searches the cities to see if the point is in a city. 
         // returns the city if it finds one, otherwise returns null.
         public City isPointACity(Point2D point) {
+            Func<Rectangle, Point2D, bool> inCity = (r, p) => (SplashKit.PointInRectangle(p, r));
+            
             foreach(City city in _cities) {
-                if(SplashKit.PointInRectangle(point, city.boardLocation)) {
+                if(inCity(city.boardLocation, point)) {
                     return city;
                 }
             }
@@ -88,7 +95,7 @@ namespace Pandemic {
         // returns null if no city found
         public City getCity(string cityName) {
             foreach(City city in _cities) {
-                if(city.name.ToLower() == cityName.ToLower()) {
+                if(compareString(city.name, cityName)) {
                     return city;
                 }
             }

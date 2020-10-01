@@ -4,13 +4,14 @@
 using SplashKitSDK;
 
 namespace Pandemic {
-    class EpidemicCard : Card {
+    class EpidemicCard : PlayerCard {
         private int _cardNumber;
         public EpidemicCard(int epidemicCardNumber) : base("EPIDEMIC!", CityGroup.epidemic) {
             _cardNumber = epidemicCardNumber;
             loadCardImages();
         }
 
+        // load the images for the card
         public override void loadCardImages() {
             SplashKit.LoadBitmap("Epidemic"+_cardNumber, "EpidemicCardFront.png");
             _frontOfCard = SplashKit.BitmapNamed("Epidemic"+_cardNumber);
