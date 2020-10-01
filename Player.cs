@@ -31,23 +31,6 @@ namespace Pandemic {
             get { return _yloc; }
             set { _yloc = value; }
         }
-        // public string typeToString { 
-        //     get {
-        //         switch(_type) {
-        //             case playerType.Researcher:
-        //                 return "Researcher";
-        //             case playerType.Dispatcher:
-        //                 return "Dispatcher";
-        //             case playerType.Generalist:
-        //                 return "Generalist";
-        //             case playerType.Medic:
-        //                 return "Medic";
-        //             // default needed to silence compiler warnings
-        //             default:
-        //                 return "Player";
-        //         }
-        //     }
-        // }
         public Bitmap pawn { get { return _pawn; } }
 
         // Constructor
@@ -57,6 +40,8 @@ namespace Pandemic {
         }
 
         // Public Methods
+        // treats the infection of the city the player is in
+        // overridden by medic
         public virtual void TreatInfection(bool diseaseIsCured) {
             if(diseaseIsCured) {
                 location.decreaseInfection(3);
@@ -102,14 +87,17 @@ namespace Pandemic {
             return curableOptions;
         }
         
+        // updates the players location
         public void Move(City toCity) {
             _location = toCity;
         }
 
+        // adds a card to the player hand
         public void AddCardToHand(PlayerCard card) {
             _cardsInHand.Add(card);
         }
 
+        // discards a player card from hand
         public void DiscardCard(PlayerCard card) {
             foreach(PlayerCard cardInHand in _cardsInHand) {
                 if(cardInHand == card) {

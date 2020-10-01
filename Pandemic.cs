@@ -1,29 +1,51 @@
 // Simple version of the Pandemic game
 // John Ryder 219466419
 
+/****************************************************************************
+* Hi! Thanks for evaluating my program. There are som things you should     *
+* know before we continue. First, if you launch the game and the title bar  *
+* is greyed out or dim, the game isn't running properly. As far as I can    *
+* tell it's a problem with the SplashKit library and how Windows are        *
+* created. Just quit and relaunch and you should be good to go.             *
+*                                                                           *
+* Second, there's a brief tutorial at the beginning, but the game is        *
+* designed for people who have read the rules. The rules are available here:*
+* https://images.zmangames.com/filer_public/48/20/482039b2-4b30-4fe9-9cf8-63ba8badc306/pandemic_hotzonena_printplay.pdf
+*                                                                           *
+* Lambdas are used, you can see examples of that in the constants section.  *
+* Generics are used, and you can see and example of that in the function    *
+* drawCards.                                                                *
+*                                                                           *
+* Other than that, I hope you like my game!                                 *
+****************************************************************************/
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SplashKitSDK;
 
 namespace Pandemic {
-    
+    // entry point for the program
     public class Pandemic {
         static void Main(string[] args) {
-            Console.WriteLine("hello world");
+            // create an instance of the game and run it
             PandemicGame game = new PandemicGame();
             game.playPandemic();
         }
     }
 
+    // This is the main interface to the game
     public class PandemicGame {
+        // Constants
+        // The window that will show the game. There seems to be a problem with Splashkit,
+        // if your game launches with a greyed out or dim titlebar, quit and restart the game.
         private Window gameWindow;
-        //private PlayerCard _card;
+        // An instance of the Board, which will handle a lot of the mechanics of the game
         private Board board;
         // to create a good sized window. tested on 15" laptop. 
         // if you change this then you'll need to change ALL the city locations on the board also!
         private const double SCALAR = 0.25F;
         private const int WINDOW_HEIGHT = 873; 
+        // constants for drawing the cards
         private const int WINDOW_CARD_BUFFER = 250;
         private const int WINDOW_WIDTH = 1316 + WINDOW_CARD_BUFFER;
         private const int INFECTION_X = 23;
@@ -34,41 +56,54 @@ namespace Pandemic {
         private const int PLAYER_CARD_Y = 650;
         private const int FLIPPED_PLAYER_CARD_X = 158;
         private const int FLIPPED_PLAYER_CARD_Y = 650;
+        // constants for the pawns offset
         private const double PLAYER_PAWN_SPACING = 30;
+        // constants for the infection cubes
         private const double INFECTION_CUBE_SIZE = 20;
         private const double INFECTION_CUBE_BUFFER = 5;
+        // the number of cards to flip for the initial infection
         private const int INITIAL_INFECTION_NUMBER = 6;
+        // the player hand limit
         private const int HAND_LIMIT = 6;
+        // constants for the markers
         private const double INFECTION_MARKER_X = 165;
         private const double INFECTION_MARKER_Y = 20;
         private const double INFECTION_MARKER_OFFSET = 65; 
         private const double OUTBREAK_MARKER_X = 1227;
         private const double OUTBREAK_MARKER_Y = 25;
         private const double OUTBREAK_MARKER_OFFSET = 75;
+        // constants for the cube counters (bottom right)
         private const double RED_CUBE_COUNTER_OFFSET = 195;
         private const double CUBE_COUNTER_OFFSET = 65;
+        // lambda to compare two strings
         private Func<string, string, bool> compareString = (s, c) => s.ToLower() == c.ToLower();
+        // lambda to get the X and Y for a deck of cards
         private Func<Card, (double, double)> getDeckCardXY = c => {
                     if(c.GetType() == typeof(InfectionCard)) {
                         return (INFECTION_X, INFECTION_Y);
                     }
                     return (PLAYER_CARD_X, PLAYER_CARD_Y);
                 };
+        // lambda to get the X and Y for the flipped cards
         private Func<Card, (double, double)> getFlippedCardXY = c => {
                     if(c.GetType() == typeof(InfectionCard)) {
                         return (FLIPPED_INFECTION_X, FLIPPED_INFECTION_Y);
                     }
                     return (FLIPPED_PLAYER_CARD_X, FLIPPED_PLAYER_CARD_Y);
         };
-        //private Func<object, object, bool> compareObject = (O1, O2) => O1 == O2;
-
+        
+        // This is the main loop that will play the game. There's setup first, then the loop.
         public void playPandemic() {
+            // load resources needed during the game
             loadResources();
             
+            // initiate the game window
             gameWindow = new Window("Pandemic", WINDOW_WIDTH, WINDOW_HEIGHT);
             
+            // initiate the board
             board = new Board();
 
+            // draw the board on the window
             drawBoard();
 
             // create the players
@@ -88,8 +123,10 @@ namespace Pandemic {
             dispatcher.Move(board.getCity("Atlanta"));
             board.addPlayer(dispatcher);
 
+            // set the current player
             Player currentPlayer = board.players[0];
 
+            // a counter to track how many actions the current player has taken
             int actionsTaken = 0;
 
             // Infection card pile
@@ -107,9 +144,11 @@ namespace Pandemic {
             playerCardRect = drawCards(playerCardToFlip, board.lastPlayerCardFlipped);
 
             // teach the player
-            string[] teaching = new string[] {"Top left is your infection card pile (click to continue)", 
+            string[] teaching = new string[] { "Welcome to John's Pandemic game! (click to continue)",
+                                            "It is advisable to read the rules before playing. They can be found at zmangames.com",
+                                            "Top left is your infection card pile", 
                                             "Next to that is your infection rate, that's how many infection cards you have to flip each round",
-                                            "Bottom left is your player card pile. You have two of these already, and you'll draw two more each turn",
+                                            "Bottom left is your player card pile. You have two of these cards already, and you'll draw two more each turn",
                                             "Top right is your outbreak tracker",
                                             "The current player, and their turn options are here on the right",
                                             "You can lose in many ways...",
@@ -138,6 +177,7 @@ namespace Pandemic {
             // this has to happen after the players have been dealt their cards
             board.insertEpidemicCards();
             
+            // the main game loop
             while(!gameWindow.CloseRequested) {
                 SplashKit.ProcessEvents();
                 // draw all the board items
@@ -151,12 +191,14 @@ namespace Pandemic {
                 } 
 
                 // check for game ending conditions
+                // see if we're out of cubes
                 bool outOfCubes = false;
                 foreach(Disease disease in board.diseases) {
                     if(disease.hasLostGame()) {
                         outOfCubes = true;
                     }
                 }
+                // if we lost, present why we lost and quit
                 if(board.outOfInfectionCards || board.outOfPlayerCards || outOfCubes || board.outbreakTracker >= 4) {
                     showMessage("Oh no, you lost!");
                     string message = "You ran out of ";
@@ -177,6 +219,7 @@ namespace Pandemic {
                     
                     SplashKit.QuitRequested();
                 }
+                // Yay, we won!
                 if(board.wonGame) {
                     showMessage("YAY, you won!");
                     SplashKit.QuitRequested();
@@ -186,6 +229,7 @@ namespace Pandemic {
                 if(SplashKit.MouseClicked(MouseButton.LeftButton)) {
                     // check for the infection card pile
                     Point2D mouseLoc = SplashKit.MousePosition();
+                    // show whichever card pile was clicked on
                     if(SplashKit.PointInRectangle(mouseLoc, infCardRect[1])) {
                         showCards(board.flippedInfectionCards);
                     } else if(SplashKit.PointInRectangle(mouseLoc, playerCardRect[1])) {
@@ -193,6 +237,7 @@ namespace Pandemic {
                     }
                 }
 
+                // Here are the player actions that can be taken.
                 // move to an adjoining city
                 if(SplashKit.KeyTyped(KeyCode.Num1Key)) {
                     if(movePlayerToCity(currentPlayer)) {
@@ -201,11 +246,14 @@ namespace Pandemic {
                 }
                 // fly to a city whose card you discard
                 if(SplashKit.KeyTyped(KeyCode.Num2Key)) {
+                    // get the player to choose one of their cards
                     PlayerCard chosenCard = playerChosenCard(currentPlayer, "Choose city card to move to that city");
                     if(chosenCard != null) {
+                        // discard the card
                         currentPlayer.DiscardCard(chosenCard);
-                    
                         board.discardPlayerCard(chosenCard);
+
+                        // move the player
                         currentPlayer.Move(board.getCity(chosenCard.city));
                         actionsTaken++;
 
@@ -217,15 +265,19 @@ namespace Pandemic {
                 }
                 // fly to any city by discarding your current city card
                 if(SplashKit.KeyTyped(KeyCode.Num3Key)) {
+                    // get the player chosen card
                     PlayerCard chosenCard = playerChosenCard(currentPlayer, "Choose your current city card");
                     drawGame(infectionCardToFlip, playerCardToFlip, currentPlayer);
 
                     if(chosenCard != null) {
+                        // make sure it is the card for the players current city
                         if(currentPlayer.location == board.getCity(chosenCard.city)) {
                             City cityToMoveTo = null;
                             while(cityToMoveTo == null) {
+                                // get the city the player wants to move to
                                 cityToMoveTo = getCityToMoveTo("Click any city to move there");
                                 if(cityToMoveTo != null) {
+                                    // move the player
                                     currentPlayer.Move(cityToMoveTo);
                                     currentPlayer.DiscardCard(chosenCard);
                                     board.discardPlayerCard(chosenCard);
@@ -248,9 +300,11 @@ namespace Pandemic {
                     Disease diseaseAtCity = board.GetDisease(currentPlayer.location.type);
                     if(diseaseAtCity != null) {
                         int previousInfectionLevel = currentPlayer.location.infectionLevel;
+                        // treat the infection
                         currentPlayer.TreatInfection(diseaseAtCity.isCured);
                         int newInfectionLevel = currentPlayer.location.infectionLevel;
                         int cubesRemoved = previousInfectionLevel - newInfectionLevel;
+                        // return the cubes
                         diseaseAtCity.returnCube(cubesRemoved);
                         // don't take a move off if they didn't remove any cubes
                         if(cubesRemoved > 0) {
@@ -275,6 +329,7 @@ namespace Pandemic {
                         if(doesPlayerHaveCard(currentPlayer) || currentPlayer.type == playerType.Researcher) {
                             PlayerCard chosenCard = null;
                             bool acceptableCardChosen = false;
+                            // if we have the card, get the user to select it
                             while(chosenCard == null || acceptableCardChosen || userHasEscaped) {
                                 string userMessage = "You can share your current city card";
                                 if(currentPlayer.type == playerType.Researcher) {
@@ -286,7 +341,7 @@ namespace Pandemic {
                                     userHasEscaped = true;
                                     break;
                                 }
-                                //if(chosenCard.city.ToLower() == currentPlayer.location.name.ToLower() || currentPlayer.type == playerType.Researcher) {
+                                // check to make sure the card chosen is OK
                                 if(compareString(chosenCard.city, currentPlayer.location.name) || currentPlayer.type == playerType.Researcher) {
                                     acceptableCardChosen = true;
                                 } else if(!compareString(chosenCard.city, currentPlayer.location.name)) {
@@ -303,7 +358,7 @@ namespace Pandemic {
                                 board.transferCard(currentPlayer, playerToGiveCardTo, chosenCard);
                                 actionsTaken++;
                             }
-                            
+                        // otherwise, we're taking a card from another player
                         } else {
                             // take the card from another player
                             Player playerWithCard = null;
@@ -321,13 +376,13 @@ namespace Pandemic {
                                     // take the card
                                     PlayerCard cardToTransfer = null;
                                     foreach(PlayerCard card in playerWithCard.cardsInHand) {
-                                        //if(card.city.ToLower() == playerWithCard.location.name.ToLower()) {
                                         if(compareString(card.city, playerWithCard.location.name)) {
                                             cardToTransfer = card;
                                         }
                                     }
                                     string alert = "Taking " + currentPlayer.location + " card from " +  playerWithCard.type;
                                     showMessage(alert);
+                                    // transfer the card
                                     board.transferCard(playerWithCard, currentPlayer, cardToTransfer);
                                     actionsTaken++;
                                 }
@@ -351,6 +406,7 @@ namespace Pandemic {
                                 if(diseaseToCheck != null && !diseaseToCheck.isCured) {
                                     diseaseToCheck.cureDisease();
                                     hasCured = true;
+                                    // discard the four cards
                                     foreach(PlayerCard card in currentPlayer.removeFourCardsToCureDisease(diseaseColour)) {
                                         board.discardPlayerCard(card);
                                     }
@@ -376,9 +432,11 @@ namespace Pandemic {
                 // Dispatcher options
                 // move a pawn to a city with another pawn
                 if(SplashKit.KeyTyped(KeyCode.Num8Key) && currentPlayer.type == playerType.Dispatcher) {
+                    // get the player you want to move
                     Player playerToMove = getPlayer();
                     bool chosenCityIsOK = false;
                     City cityToMoveTo = null;
+                    // get the city to move to
                     while(!chosenCityIsOK) {
                         cityToMoveTo = getCityToMoveTo("Select a city with another player in it");
                         foreach(Player player in board.players) {
@@ -389,12 +447,15 @@ namespace Pandemic {
                         }
                     }
                     
+                    // move the player
                     playerToMove.Move(cityToMoveTo);
                     actionsTaken++;
                 }
                 // move another pawn to a connected city
                 if(SplashKit.KeyTyped(KeyCode.Num9Key) && currentPlayer.type == playerType.Dispatcher) {
+                    // get the other player
                     Player playerToMove = getPlayer();
+                    // move them
                     if(movePlayerToCity(playerToMove)) {
                         actionsTaken++;
                     }
@@ -402,14 +463,19 @@ namespace Pandemic {
 
                 gameWindow.Refresh(60);
 
-                // check to see if the player has had their turn
+                // check to see if the player has finished their turn
                 if(actionsTaken >= currentPlayer.turns) {
+                    // draw two player cards
                     playerDrawsCityCards(currentPlayer, infectionCardToFlip);
+                    // you can only hold so many cards
                     while(currentPlayer.cardsInHand.Count > HAND_LIMIT) {
                         discarCards(currentPlayer);
                     }
+                    // infect the new cities
                     playerDrawsInfectionCards(currentPlayer, playerCardToFlip);
+                    // incriment the player
                     currentPlayer = nextPlayer(currentPlayer);
+                    // reset the action count
                     actionsTaken = 0;
                 }
             }
@@ -440,35 +506,13 @@ namespace Pandemic {
             return rectToReturn;
         }
 
-        // draws the infection card pile and returns the rect where the pile is
-        // private Rectangle[] drawInfectionCards(InfectionCard infectionCardToFlip, InfectionCard flippedInfectionCard) {
-        //     Rectangle[] rectsToReturn = new Rectangle[2];
-        //     gameWindow.DrawBitmap(infectionCardToFlip.cardImage, INFECTION_X, INFECTION_Y);
-        //     rectsToReturn[0] = getCardRect(INFECTION_X, INFECTION_Y, infectionCardToFlip.cardImage.Width, infectionCardToFlip.cardImage.Height);
-        //     if(flippedInfectionCard != null) {
-        //         gameWindow.DrawBitmap(flippedInfectionCard.cardImage, FLIPPED_INFECTION_X, FLIPPED_INFECTION_Y);
-        //         rectsToReturn[1] = getCardRect(FLIPPED_INFECTION_X, FLIPPED_INFECTION_Y, flippedInfectionCard.cardImage.Width, flippedInfectionCard.cardImage.Height);
-        //     }
-
-        //     return rectsToReturn;
-        // }
-
-        // draws the player card pile and returns the rect where the pile is
-        // private Rectangle[] drawPlayerCards(Card playerCardToFlip, Card flippedPlayerCard) {
-        //     Rectangle[] rectsToReturn = new Rectangle[2];
-        //     gameWindow.DrawBitmap(playerCardToFlip.cardImage, PLAYER_CARD_X, PLAYER_CARD_Y);
-        //     rectsToReturn[0] = getCardRect(PLAYER_CARD_X, PLAYER_CARD_Y, playerCardToFlip.cardImage.Width, playerCardToFlip.cardImage.Height);
-        //         if(flippedPlayerCard != null) {
-        //             gameWindow.DrawBitmap(flippedPlayerCard.cardImage, FLIPPED_PLAYER_CARD_X, FLIPPED_PLAYER_CARD_Y);
-        //             rectsToReturn[1] = getCardRect(FLIPPED_PLAYER_CARD_X, FLIPPED_PLAYER_CARD_Y, flippedPlayerCard.cardImage.Width, flippedPlayerCard.cardImage.Height);
-        //         }
-            
-        //     return rectsToReturn;
-        // }
-
+        // draws the card pile and returns the rect where the pile is
+        // generic function to deal with any type of Card
         private Rectangle[] drawCards<T>(T cardToFlip, T flippedCard) where T : Card {
             Rectangle[] rectsToReturn = new Rectangle[2];
+            // get the tuple from the lambda
             var (xLoc, yLoc) = getDeckCardXY(cardToFlip);
+            // do the drawing
             gameWindow.DrawBitmap(cardToFlip.cardImage, xLoc, yLoc);
             rectsToReturn[0] = getCardRect(xLoc, yLoc, cardToFlip.cardImage.Width, cardToFlip.cardImage.Height);
             if(flippedCard != null) {
@@ -482,6 +526,7 @@ namespace Pandemic {
 
         // draws the players
         private void drawPlayers(List<Player> players) {
+            // players are offset from the centre of their city so they don't overlap
             double playerX; 
             double playerY; 
             double Xoffset = 0;
@@ -518,6 +563,7 @@ namespace Pandemic {
 
         // initial infection for the board
         private void initialInfectBoard() {
+            // show the warning
             bool showAlert = true;
             while(showAlert) {
                 SplashKit.ProcessEvents();
@@ -528,6 +574,7 @@ namespace Pandemic {
                 gameWindow.Refresh(60);
             }
             drawBoard();
+            // do the infections
             infectBoard(INITIAL_INFECTION_NUMBER, null, null);    
         }
 
@@ -539,6 +586,7 @@ namespace Pandemic {
             Rectangle infCardRect = drawCards(infectionCardToFlip, flippedInfectionCard)[0];
             drawGame(infectionCardToFlip, playerCardToFlip, currentPlayer);
             
+            // infect with the specified number of infections
             while(infectedCities < numberOfInfections) {
                 if(playerClickedInRectangle(infCardRect)) {
                     flippedInfectionCard = infectionCardToFlip;
@@ -573,6 +621,7 @@ namespace Pandemic {
                     infectedCities++;
                 }
                 
+                // draw the infections we've just done
                 drawCityInfections();
                 gameWindow.Refresh(60);
             }
@@ -590,7 +639,8 @@ namespace Pandemic {
                 }
             }
         }
-        // draws the HUD that coaches players
+
+        // draws the HUD that informs players
         private void drawHUD(Player player) {
             string bitmapName = "";
             switch(player.type) {
@@ -643,6 +693,7 @@ namespace Pandemic {
             while(true) {
                 SplashKit.ProcessEvents();
                 displayCards(cards);
+                // ways to dismiss the display of cards
                 if(SplashKit.MouseClicked(MouseButton.LeftButton) || SplashKit.KeyTyped(KeyCode.ReturnKey) || SplashKit.KeyTyped(KeyCode.SpaceKey) || SplashKit.KeyTyped(KeyCode.Num7Key) || SplashKit.KeyTyped(KeyCode.EscapeKey)) { 
                     return;
                 }
@@ -659,6 +710,7 @@ namespace Pandemic {
                 drawHUDWarning(message);
                 if(SplashKit.MouseClicked(MouseButton.LeftButton)) {
                     Point2D mouseLoc = SplashKit.MousePosition();
+                    // check to see if the click was in a card
                     foreach(PlayerCard card in player.cardsInHand) {
                         Rectangle cardRect = new Rectangle();
                         cardRect.X = card.xLoc;
@@ -713,6 +765,7 @@ namespace Pandemic {
             gameWindow.FillRectangle(Color.BurlyWood, messageRect);
             gameWindow.DrawText(message, Color.Black, "roboto",  20, textX, textY);
             gameWindow.Refresh(60);
+            // keep showing the message until clicked, space, enter, etc..
             while(true) {
                 SplashKit.ProcessEvents();
                 if(SplashKit.MouseClicked(MouseButton.LeftButton) || SplashKit.KeyTyped(KeyCode.ReturnKey) || SplashKit.KeyTyped(KeyCode.SpaceKey) || SplashKit.KeyTyped(KeyCode.EscapeKey)) { 
@@ -739,14 +792,13 @@ namespace Pandemic {
 
         // draws the board image
         private void drawBoard() {
-            // here for drawing the board...
             double xOffset = (WINDOW_WIDTH - SplashKit.BitmapNamed("boardImage").Width - WINDOW_CARD_BUFFER) / 2;
             double yOffset = (WINDOW_HEIGHT - SplashKit.BitmapNamed("boardImage").Height) / 2;
             
             gameWindow.DrawBitmap(SplashKit.BitmapNamed("boardImage"), xOffset, yOffset, SplashKit.OptionScaleBmp(SCALAR, SCALAR));
         }
 
-        // can this be generalised with getCard?
+        // get a chosen player from the user
         private Player getPlayer() {
             Player chosenPlayer = null;
             while(chosenPlayer == null) {
@@ -793,10 +845,8 @@ namespace Pandemic {
 
         // returns true if a city card is in the players hand
         private bool doesPlayerHaveCard(Player player) {
-            // Func<string, string, bool> compareString = (s, c) => s.ToLower() == c.ToLower();
             foreach(PlayerCard card in player.cardsInHand) {
                 if(compareString(card.city, player.location.name)) {
-                //if(card.city.ToLower() == player.location.name.ToLower()) {
                     return true;
                 }
             }
@@ -962,6 +1012,7 @@ namespace Pandemic {
                 showMessage("Now we shuffle the drawn infection cards and put them back on the deck");
 
                 board.shuffleAndRestackDrawnInfectionCards();
+                drawGame(infectionCardToFlip, playerCardToFlip, currentPlayer);
             }
         }
 
@@ -1022,8 +1073,8 @@ namespace Pandemic {
             gameWindow.DrawBitmap(SplashKit.BitmapNamed("infectionMarker"), infectionMarkerX, INFECTION_MARKER_Y);
 
             // outbreak marker
-            double outbreakMarkerX = OUTBREAK_MARKER_X + (board.outbreakTracker * OUTBREAK_MARKER_OFFSET);
-            gameWindow.DrawBitmap(SplashKit.BitmapNamed("outbreakMarker"), outbreakMarkerX, OUTBREAK_MARKER_Y);
+            double outbreakMarkerY = OUTBREAK_MARKER_Y + (board.outbreakTracker * OUTBREAK_MARKER_OFFSET);
+            gameWindow.DrawBitmap(SplashKit.BitmapNamed("outbreakMarker"), OUTBREAK_MARKER_X, outbreakMarkerY);
         }
     }
 }

@@ -1,12 +1,16 @@
 // Board for the game Pandemic
 // John Ryder 219466419
 
+// This class is responsible for running most of the game. It responds to requests from Pandemic.cs, 
+// and directs changes here and in other classes. 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using SplashKitSDK;
 
 namespace Pandemic {
+    // This subscribes to City to be alerted of outbreaks
     public class Board : IObserver<City> {
         // Variables
         private IDisposable cancellation;
@@ -91,7 +95,6 @@ namespace Pandemic {
         // returns null if no city found
         public City getCity(string cityName) {
             foreach(City city in _cities) {
-                //if(city.name.ToLower() == cityName.ToLower()) {
                 if(compareString(city.name, cityName)) {
                     return city;
                 }

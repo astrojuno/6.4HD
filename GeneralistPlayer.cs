@@ -8,6 +8,7 @@ namespace Pandemic {
         // Constructor
         public GeneralistPlayer() : base(playerType.Generalist) {
             base._pawn = SplashKit.BitmapNamed("generalist");
+            // generalist player gets 5 turns instead of 4
             base._turns = 5;
         }
     }

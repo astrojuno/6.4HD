@@ -67,6 +67,7 @@ namespace Pandemic {
             }
         }
 
+        // decreases the infection level of the city
         public void decreaseInfection(int numberToDecreaseBy) {
             _infectionLevel -= numberToDecreaseBy;
             if(_infectionLevel < 0) {
@@ -74,10 +75,12 @@ namespace Pandemic {
             }
         }
 
+        // adds a connection to another city. When you look at the board game, this is one of the joining lines.
         public void addConnectedCity(City cityToAdd) {
             _connectedCities.Add(cityToAdd);
         }
 
+        // the location of this city on the board.
         public void setBoardLocation(Rectangle boardLocation, Point2D cityCentre) {
             _cityLoc = boardLocation;
             _cityCentre = cityCentre;
@@ -92,6 +95,7 @@ namespace Pandemic {
         }
         
         // Private Methods
+        // alerts the board when an outbreak happens. Then outbreaks to connected cities.
         private void outbreak() {
             _canBeOutbroken = false;
             foreach(IObserver<City> observer in _observers) {

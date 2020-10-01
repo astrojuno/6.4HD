@@ -11,6 +11,7 @@ namespace Pandemic {
             loadCardImages();
         }
 
+        // load the images for the card
         public override void loadCardImages() {
             SplashKit.LoadBitmap("Epidemic"+_cardNumber, "EpidemicCardFront.png");
             _frontOfCard = SplashKit.BitmapNamed("Epidemic"+_cardNumber);
